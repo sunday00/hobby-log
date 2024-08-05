@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 class Profile {
     String nickname;
-
+    String thumbnail_image_url;
 }
 
 @Data
@@ -24,16 +24,3 @@ public class KakaoMeInfo {
     @JsonProperty("kakao_account")
     KakaoAccount kakaoAccount;
 }
-
-
-//{
-//    id=2953955725,
-//    kakao_account={
-//            profile={
-//                    nickname=무한일요일(김종현),
-//                    is_default_nickname=false
-//            },
-//            has_email=true,
-//            email=grayfield00@naver.com
-//    }
-//}

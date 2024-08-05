@@ -1,0 +1,8 @@
+extend type Query {
+    sign(code: String): Auth
+}
+
+type Auth {
+    accessToken: String
+    exp: Int
+}

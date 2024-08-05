@@ -1,0 +1,8 @@
+extend type Mutation {
+    register(userInput: UserInput): Auth
+}
+
+input UserInput {
+    username: String
+    password: String
+}

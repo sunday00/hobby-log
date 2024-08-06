@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class Auth {
     private String accessToken;
-    private Integer exp;
+    // TODO: refresh token
 }

@@ -19,4 +19,8 @@ public class User {
     private String profileImage;
 
     private String email;
+
+    private String vendor;
+
+    private String vendorId;
 }

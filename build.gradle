@@ -49,6 +49,9 @@ dependencies {
     testImplementation 'org.springframework.graphql:spring-graphql-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // https://mvnrepository.com/artifact/com.aventrix.jnanoid/jnanoid
+    runtimeOnly 'com.aventrix.jnanoid:jnanoid:2.0.0'
 }
 
 tasks.named('test') {

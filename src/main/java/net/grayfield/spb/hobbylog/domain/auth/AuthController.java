@@ -6,6 +6,8 @@ import net.grayfield.spb.hobbylog.domain.auth.service.KakaoService;
 import net.grayfield.spb.hobbylog.domain.auth.struct.Auth;
 import net.grayfield.spb.hobbylog.domain.auth.struct.KakaoMeInfo;
 import net.grayfield.spb.hobbylog.domain.auth.struct.KakaoTokenRes;
+import net.grayfield.spb.hobbylog.domain.user.service.UserService;
+import net.grayfield.spb.hobbylog.domain.user.struct.User;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
@@ -24,6 +26,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class AuthController {
     private final KakaoService kakaoService;
+    private final UserService userService;
 
     @QueryMapping
     public Auth sign (@Argument String code) {
@@ -38,7 +41,9 @@ public class AuthController {
 
         log.info("{}", meRes);
 
+        User user = userService.findOneOrCreateByEmail(meRes);
 
+        log.info("{}", user);
 
         Auth auth = new Auth();
         auth.setAccessToken("111");

@@ -1,7 +1,10 @@
 package net.grayfield.spb.hobbylog.domain.user.repository;
 
-public class UserRepository {
-    //TODO:
-    // store profile to static file
-    // store mongodb
+import org.springframework.data.mongodb.repository.MongoRepository;
+import net.grayfield.spb.hobbylog.domain.user.struct.User;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserRepository extends MongoRepository<User, String> {
+    User findByEmail(String email);
 }

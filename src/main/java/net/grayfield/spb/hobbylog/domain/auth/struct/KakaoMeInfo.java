@@ -6,7 +6,9 @@ import lombok.Data;
 @Data
 class Profile {
     String nickname;
-    String thumbnail_image_url;
+
+    @JsonProperty("thumbnail_image_url")
+    String thumbnailImage;
 }
 
 @Data
@@ -23,4 +25,16 @@ public class KakaoMeInfo {
 
     @JsonProperty("kakao_account")
     KakaoAccount kakaoAccount;
+
+    public String getEmail() {
+        return this.kakaoAccount.getEmail();
+    }
+
+    public String getNickname() {
+        return this.kakaoAccount.getProfile().getNickname();
+    }
+
+    public String getThumbnailImage() {
+        return this.kakaoAccount.getProfile().getThumbnailImage();
+    }
 }

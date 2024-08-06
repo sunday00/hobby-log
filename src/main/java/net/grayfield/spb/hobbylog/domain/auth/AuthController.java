@@ -35,11 +35,7 @@ public class AuthController {
         assert tokenRes != null;
         String kakaoToken = tokenRes.getAccess_token();
 
-        log.info("{}", kakaoToken);
-
         KakaoMeInfo meRes = kakaoService.getKakaoMeInfo(kakaoToken);
-
-        log.info("{}", meRes);
 
         User user = userService.findOneOrCreateByEmail(meRes);
 

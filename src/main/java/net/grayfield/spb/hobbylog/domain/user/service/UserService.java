@@ -26,9 +26,10 @@ public class UserService {
         user.setEmail(email);
         user.setUsername(info.getNickname());
         user.setProfileImage(info.getThumbnailImage());
-        user.setRoles(List.of(Role.USER));
+        user.setRoles(List.of(Role.ROLE_USER));
         user.setVendor("kakao");
         user.setVendorId(info.getId());
+        user.setIsActive(true);
 
         return userRepository.save(user);
     }

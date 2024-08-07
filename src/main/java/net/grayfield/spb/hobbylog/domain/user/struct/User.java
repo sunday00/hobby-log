@@ -26,4 +26,6 @@ public class User {
     private String vendorId;
 
     private List<Role> roles;
+
+    private Boolean isActive;
 }

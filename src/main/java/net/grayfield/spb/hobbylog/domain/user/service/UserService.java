@@ -5,6 +5,7 @@ import net.grayfield.spb.hobbylog.domain.auth.struct.KakaoMeInfo;
 import net.grayfield.spb.hobbylog.domain.user.repository.UserRepository;
 import net.grayfield.spb.hobbylog.domain.user.struct.Role;
 import net.grayfield.spb.hobbylog.domain.user.struct.User;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public User findOneOrCreateByEmail(KakaoMeInfo info) {
         String email = info.getEmail();
@@ -32,5 +34,9 @@ public class UserService {
         user.setIsActive(true);
 
         return userRepository.save(user);
+    }
+
+    public void createUserSession(User user) {
+        redisTemplate.opsForValue().set("session:" + user.getId(), user);
     }
 }

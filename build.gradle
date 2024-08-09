@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     implementation 'com.graphql-java:graphql-java-extended-scalars:2023-01-24T02-11-56-babda5f'
     implementation 'com.tailrocks.graphql:graphql-datetime-spring-boot-starter:6.0.0'
@@ -49,9 +50,6 @@ dependencies {
     testImplementation 'org.springframework.graphql:spring-graphql-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // https://mvnrepository.com/artifact/com.aventrix.jnanoid/jnanoid
-    runtimeOnly 'com.aventrix.jnanoid:jnanoid:2.0.0'
 }
 
 tasks.named('test') {

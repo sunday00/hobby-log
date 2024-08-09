@@ -30,15 +30,16 @@ public class GlobalExceptionHandler {
                     .message("unauthorized")
                     .path(ev.getExecutionStepInfo().getPath())
                     .location(ev.getField().getSourceLocation())
-                    // TODO: create custom exception
-//                    .errorType(HttpClientErrorException.Unauthorized)
-//                    .extensions(ex.getEx)
+                    .errorType(CustomErrorType.UNAUTHORIZED)
                     .build();
         }
 
         return GraphQLError.newError()
-//                .errorType(CustomErrorType.FORCED_INTENDED_ERROR)
-                .message("??").build();
+                .message(ex.getMessage())
+                .path(ev.getExecutionStepInfo().getPath())
+                .location(ev.getField().getSourceLocation())
+                .errorType(CustomErrorType.INTERNAL_ERROR)
+                .build();
     }
 
 //    @GraphQlExceptionHandler

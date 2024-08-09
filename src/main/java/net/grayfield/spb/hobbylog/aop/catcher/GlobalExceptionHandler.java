@@ -34,6 +34,15 @@ public class GlobalExceptionHandler {
                     .build();
         }
 
+        if(ex.getMessage().contains("error_code\":\"KOE320\"")) {
+            return GraphQLError.newError()
+                    .message("Kakao code expired. Try other code.")
+                    .path(ev.getExecutionStepInfo().getPath())
+                    .location(ev.getField().getSourceLocation())
+                    .errorType(CustomErrorType.UNAUTHORIZED)
+                    .build();
+        }
+
         return GraphQLError.newError()
                 .message(ex.getMessage())
                 .path(ev.getExecutionStepInfo().getPath())

@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.aop.interceptors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import graphql.*;
 import graphql.language.Document;
 import graphql.language.Field;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -65,6 +67,9 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                         return;
                     }
 
+                    String jwtToken = Objects.requireNonNull(request.getHeaders().getFirst("Authorization")).replaceFirst("[b|B]aerer ", "");
+                    log.info("jwtToken: {}", jwtToken);
+
                     // TODO: create via request real user
                     User user = new User();
                     user.setId("qwe123");
@@ -76,7 +81,11 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                     user.setRoles(List.of(Role.ROLE_USER));
                     user.setIsActive(true);
 
-                    this.userService.createUserSession(user);
+                    try {
+                        this.userService.createUserSession(user);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     UserAuthentication authentication = new UserAuthentication(user);
                     authentication.setAuthenticated(true);

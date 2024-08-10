@@ -1,6 +1,10 @@
 package net.grayfield.spb.hobbylog.domain.user.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.auth.service.JwtService;
 import net.grayfield.spb.hobbylog.domain.auth.struct.KakaoMeInfo;
 import net.grayfield.spb.hobbylog.domain.user.repository.UserRepository;
 import net.grayfield.spb.hobbylog.domain.user.struct.Role;
@@ -8,13 +12,17 @@ import net.grayfield.spb.hobbylog.domain.user.struct.User;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private final JwtService jwtService;
 
     public User findOneOrCreateByEmail(KakaoMeInfo info) {
         String email = info.getEmail();
@@ -36,7 +44,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void createUserSession(User user) {
-        redisTemplate.opsForValue().set("session:" + user.getId(), user);
+    public void createUserSession(User user) throws JsonProcessingException {
+        try {
+            String key = "session:" + user.getId();
+            this.redisTemplate.opsForValue().set(key, user);
+            this.redisTemplate.expire(key, Duration.ofSeconds(jwtService.getTtl()));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            log.error(String.valueOf(e.getCause()));
+        }
     }
 }

@@ -7,6 +7,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Getter
     @Value("${jwt.ttl}")
     private Integer ttl;
 

@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.aop.catcher.SignWithOtherException;
+import net.grayfield.spb.hobbylog.domain.auth.service.JwtService;
 import net.grayfield.spb.hobbylog.domain.user.service.UserService;
 import net.grayfield.spb.hobbylog.domain.user.struct.Role;
 import net.grayfield.spb.hobbylog.domain.user.struct.User;
@@ -33,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 @RequiredArgsConstructor
 public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
+    private final JwtService jwtService;
     private final UserService userService;
 
     @Override
@@ -70,23 +72,20 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                     String jwtToken = Objects.requireNonNull(request.getHeaders().getFirst("Authorization")).replaceFirst("[b|B]aerer ", "");
                     log.info("jwtToken: {}", jwtToken);
 
-                    // TODO: create via request real user
-                    User user = new User();
-                    user.setId("qwe123");
-                    user.setUsername("sunday00");
-                    user.setProfileImage("");
-                    user.setEmail("sunday00@gmail.com");
-                    user.setVendor("kakao");
-                    user.setVendorId("6778");
-                    user.setRoles(List.of(Role.ROLE_USER));
-                    user.setIsActive(true);
+                    String userId = this.jwtService.getUserIdFromJwtToken(jwtToken);
+                    log.info("userId: {}", userId);
 
-                    try {
-                        this.userService.createUserSession(user);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
+                    User user = this.userService.getUserFromSession(userId);
+
+                    if (user == null) {
+                        user = this.userService.findOneById(userId);
+                        try {
+                            this.userService.createUserSession(user);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-
+                    
                     UserAuthentication authentication = new UserAuthentication(user);
                     authentication.setAuthenticated(true);
 

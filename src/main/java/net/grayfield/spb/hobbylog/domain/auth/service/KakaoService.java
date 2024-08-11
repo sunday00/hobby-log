@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 public class KakaoService {
     @Value("${kakao.client_id}")
     private String clientId;

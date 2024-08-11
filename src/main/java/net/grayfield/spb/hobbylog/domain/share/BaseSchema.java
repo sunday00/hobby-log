@@ -1,11 +1,9 @@
 package net.grayfield.spb.hobbylog.domain.share;
 
-import lombok.Data;
 import java.util.Date;
 import org.springframework.data.annotation.Id;
 
-@Data
-public class BaseSchema {
+public abstract class BaseSchema {
     @Id
     protected String id;
 

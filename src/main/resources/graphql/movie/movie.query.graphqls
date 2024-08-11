@@ -1,5 +1,9 @@
 extend type Query {
-    testRole: Int
+    searchMovies(search: String, page: Int = 1): [Movie]
+}
+
+type Movie {
+    title: String
 }
 
 enum Role {

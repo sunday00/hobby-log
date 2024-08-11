@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.aop.catcher.SignWithOtherException;
 import net.grayfield.spb.hobbylog.domain.auth.service.JwtService;
 import net.grayfield.spb.hobbylog.domain.user.service.UserService;
-import net.grayfield.spb.hobbylog.domain.user.struct.Role;
 import net.grayfield.spb.hobbylog.domain.user.struct.User;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.jetbrains.annotations.NotNull;
@@ -85,7 +84,7 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                             throw new RuntimeException(e);
                         }
                     }
-                    
+
                     UserAuthentication authentication = new UserAuthentication(user);
                     authentication.setAuthenticated(true);
 

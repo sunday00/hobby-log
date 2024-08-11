@@ -1,0 +1,13 @@
+extend type Query {
+    searchMovies(search: String, page: Int = 1): [Movie]
+}
+
+type Movie {
+    title: String
+}
+
+enum Role {
+    ROLE_GUEST
+    ROLE_USER
+    ROLE_ADMIN
+}

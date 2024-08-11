@@ -7,6 +7,8 @@ import lombok.Data;
 class Profile {
     String nickname;
 
+    @JsonProperty("thumbnail_image_url")
+    String thumbnailImage;
 }
 
 @Data
@@ -23,17 +25,16 @@ public class KakaoMeInfo {
 
     @JsonProperty("kakao_account")
     KakaoAccount kakaoAccount;
+
+    public String getEmail() {
+        return this.kakaoAccount.getEmail();
+    }
+
+    public String getNickname() {
+        return this.kakaoAccount.getProfile().getNickname();
+    }
+
+    public String getThumbnailImage() {
+        return this.kakaoAccount.getProfile().getThumbnailImage();
+    }
 }
-
-
-//{
-//    id=2953955725,
-//    kakao_account={
-//            profile={
-//                    nickname=무한일요일(김종현),
-//                    is_default_nickname=false
-//            },
-//            has_email=true,
-//            email=grayfield00@naver.com
-//    }
-//}

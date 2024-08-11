@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.movie.struct.Genre;
 import net.grayfield.spb.hobbylog.domain.movie.struct.MovieRawPage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -11,6 +12,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -20,6 +22,8 @@ public class MovieService {
     @Value("${tmdb.api_key}")
     private String tmdbApiKey;
     //https://api.themoviedb.org/3/search/movie?query=Jack+Reacher&api_key=API_KEY
+
+    private final GenreService genreService;
 
     public void searchMovieFromTMDB(String search, Long page) throws JsonProcessingException {
         RestClient client = RestClient.builder()
@@ -44,5 +48,7 @@ public class MovieService {
 //        ObjectMapper mapper = new ObjectMapper();
 //        log.info("{}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
         log.info("{}", result);
+
+        List<Genre> genreList = this.genreService.getGenres().getGenres();
     }
 }

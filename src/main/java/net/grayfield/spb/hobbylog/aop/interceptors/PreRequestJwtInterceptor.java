@@ -68,7 +68,7 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                         return;
                     }
 
-                    String jwtToken = Objects.requireNonNull(request.getHeaders().getFirst("Authorization")).replaceFirst("[b|B]aerer ", "");
+                    String jwtToken = Objects.requireNonNull(request.getHeaders().getFirst("Authorization")).replaceFirst("[b|B]earer ", "");
                     log.info("jwtToken: {}", jwtToken);
 
                     String userId = this.jwtService.getUserIdFromJwtToken(jwtToken);

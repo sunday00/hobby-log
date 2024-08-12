@@ -6,8 +6,7 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.movie.service.MovieService;
-import net.grayfield.spb.hobbylog.domain.movie.struct.MovieRawDetail;
-import net.grayfield.spb.hobbylog.domain.movie.struct.MovieRawPage;
+import net.grayfield.spb.hobbylog.domain.movie.struct.*;
 import net.grayfield.spb.hobbylog.domain.share.Result;
 import net.grayfield.spb.hobbylog.domain.user.struct.Role;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -18,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
+import java.util.Map;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -26,16 +27,23 @@ public class MovieController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
-    public Result logMovie (@Argument Long id, GraphQLContext context, DataFetchingEnvironment e) throws JsonProcessingException {
-        MovieRawDetail koDetail = this.movieService.getMovieDetail(id, "ko-KR");
-        MovieRawDetail enDetail = this.movieService.getMovieDetail(id, "en-US");
+    public Result logMovie (
+            @Argument Long id, @Argument String content, @Argument Integer stars,
+            GraphQLContext context, DataFetchingEnvironment e
+    ) {
+        MovieRawDetail koDetailRaw = this.movieService.getMovieDetail(id, "ko-KR");
+        MovieRawDetail enDetailRaw = this.movieService.getMovieDetail(id, "en-US");
 
-        // TODO: get credit https://developer.themoviedb.org/reference/movie-credits
-        // TODO: get keywords
+        MovieRawCredit creditRaw = this.movieService.getMovieCredits(id, "ko-KR");
+        MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(id);
 
+        MovieStoreResult success = this.movieService.store(
+                koDetailRaw, enDetailRaw, creditRaw, keywordRaw,
+                content, stars
+        );
 
         return Result.builder()
-                .success(true)
+                .success(success.getSuccess())
                 .build();
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Document
 @EqualsAndHashCode(callSuper = true)
 public class Movie extends BaseSchema {
-    Movie () {
+    public Movie () {
         this.category = Category.MOVIE;
     }
 
@@ -29,11 +29,11 @@ public class Movie extends BaseSchema {
 
     private String language;
 
-    private String director;
+    private List<Crew> directors;
 
-    private List<String> actors;
+    private List<Casting> actors;
 
-    private List<Genre> genres;
+    private List<String> genres;
 
     private List<String> keywords;
 

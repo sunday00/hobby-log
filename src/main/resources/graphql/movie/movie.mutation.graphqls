@@ -1,3 +1,3 @@
 extend type Mutation {
-    testRole: Role
+    logMovie(id: Long): Result
 }

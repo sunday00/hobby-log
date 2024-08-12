@@ -43,6 +43,9 @@ public class GenreService {
                 .retrieve()
                 .body(GenreResponse.class);
 
+        // ObjectMapper mapper = new ObjectMapper();
+        // log.info("{}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+
         // TODO: store mongo
 
         assert result != null;

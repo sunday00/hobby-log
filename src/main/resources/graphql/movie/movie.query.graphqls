@@ -1,13 +1,28 @@
 extend type Query {
-    searchMovies(search: String, page: Int = 1): [Movie]
+    searchMovies(search: String, page: Long = 1): MovieRawPge
+}
+
+type MovieRawPge {
+    page: Long
+    results: [Movie]
+    totalPages: Long
+    totalResults: Long
 }
 
 type Movie {
+    id: Long
     title: String
+    originalTitle: String
+    adult: Boolean
+    video: Boolean
+    backdropPath: String
+    posterPath: String
+    genreIds:  [Long]
+    originalLanguage: String
+    overview: String
+    popularity: Float
+    releaseDate: String
+    voteAverage: Float
+    voteCount: Long
 }
 
-enum Role {
-    ROLE_GUEST
-    ROLE_USER
-    ROLE_ADMIN
-}

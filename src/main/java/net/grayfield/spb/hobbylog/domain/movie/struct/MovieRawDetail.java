@@ -2,7 +2,6 @@ package net.grayfield.spb.hobbylog.domain.movie.struct;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data
@@ -18,6 +17,15 @@ class BelongsCollection {
 }
 
 @Data
+class ProductionCountry {
+    @JsonProperty("iso_3166_1")
+    private String name;
+
+    @JsonProperty("name")
+    private String fullname;
+}
+
+@Data
 class Production  {
     private Long id;
 
@@ -28,15 +36,6 @@ class Production  {
 
     @JsonProperty("origin_country")
     private String originCountry;
-}
-
-@Data
-class ProductionCountry {
-    @JsonProperty("iso_3166_1")
-    private String name;
-
-    @JsonProperty("name")
-    private String fullname;
 }
 
 @Data
@@ -106,7 +105,7 @@ public class MovieRawDetail {
     @JsonProperty("release_date")
     private String releaseDate;
 
-    private Long runtime;
+    private int runtime;
 
     @JsonProperty("spoken_languages")
     private List<SpokenLanguages> spokenLanguages;
@@ -114,4 +113,8 @@ public class MovieRawDetail {
     private String status;
 
     private String tagline;
+
+    public List<String> getProductionCompaniesName() {
+        return this.productionCompanies.stream().map(Production::getName).toList();
+    }
 }

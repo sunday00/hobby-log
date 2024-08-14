@@ -8,16 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.movie.service.MovieService;
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
 import net.grayfield.spb.hobbylog.domain.share.Result;
-import net.grayfield.spb.hobbylog.domain.user.struct.Role;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -37,14 +32,11 @@ public class MovieController {
         MovieRawCredit creditRaw = this.movieService.getMovieCredits(id, "ko-KR");
         MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(id);
 
-        MovieStoreResult success = this.movieService.store(
+        return this.movieService.store(
+                id,
                 koDetailRaw, enDetailRaw, creditRaw, keywordRaw,
                 content, stars
         );
-
-        return Result.builder()
-                .success(success.getSuccess())
-                .build();
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")

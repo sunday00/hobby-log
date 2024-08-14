@@ -58,4 +58,6 @@ public class Movie extends BaseSchema {
     private int runtime;
 
     private String tagline;
+
+    private String originalTagline;
 }

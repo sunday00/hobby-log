@@ -3,15 +3,16 @@ package net.grayfield.spb.hobbylog.domain.movie.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieRepository;
+import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
+import net.grayfield.spb.hobbylog.domain.share.Category;
+import net.grayfield.spb.hobbylog.domain.share.Result;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -25,6 +26,7 @@ public class MovieService {
 
     private final RestClient movieBaseClient;
     private final MovieRepository movieRepository;
+    private final MovieTemplateRepository movieTemplateRepository;
 
     public MovieRawPage searchMovieFromTMDB(String search, Long page) {
         return movieBaseClient.get()
@@ -91,18 +93,23 @@ public class MovieService {
                 .body(MovieRawKeyword.class);
     }
 
-    public MovieStoreResult store(
+    public Result store(
+            Long id,
             MovieRawDetail koDetailRaw, MovieRawDetail enDetailRaw, MovieRawCredit creditRaw, MovieRawKeyword keywordRaw,
             String content, Integer stars
     ) {
         try {
-            List<Crew> directors = creditRaw.getCrews().stream().filter(c -> c.getJob().equals("Director")).findAny().stream().toList();
-            List<Casting> castings = creditRaw.getCasts().stream().filter(c -> c.getDepartment().equals("Acting")).findAny().stream().toList();
-
-            //TODO: genres from mongodb first
+            List<Crew> directors = creditRaw.getCrews().stream().filter(c -> c.getJob().equals("Director")).toList();
+            List<Casting> castings = creditRaw.getCasts().stream().filter(c -> c.getDepartment().equals("Acting")).toList();
+            List<String> genres = koDetailRaw.getGenres().stream().map(Genre::getName).toList();
+            List<String> keywords = keywordRaw.getKeywords().stream().map(Keyword::getName).toList();
+            List<String> productions = enDetailRaw.getProductionCompaniesName();
 
             Movie movie = new Movie();
+            movie.setId(id);
+            movie.setCategory(Category.MOVIE);
             movie.setAdult(koDetailRaw.getAdult());
+            movie.setTitle(koDetailRaw.getTitle());
             movie.setOriginalTitle(enDetailRaw.getOriginalTitle());
             movie.setThumbnail(koDetailRaw.getPosterPath());
             movie.setBudget(koDetailRaw.getBudget());
@@ -111,11 +118,28 @@ public class MovieService {
             movie.setLanguage(koDetailRaw.getOriginalLanguage());
             movie.setDirectors(directors);
             movie.setActors(castings);
-            movie.setGenres(koDetailRaw.getGenres().stream().map(Genre::getName).toList());
+            movie.setGenres(genres);
+            movie.setKeywords(keywords);
+            movie.setSynopsis(koDetailRaw.getOverview());
+            movie.setOriginalSynopsis(enDetailRaw.getOverview());
+            movie.setContents(content);
+            movie.setStars(stars);
+            movie.setPopularity(koDetailRaw.getPopularity());
+            movie.setVoteAverage(koDetailRaw.getVoteAverage());
+            movie.setVoteCount(koDetailRaw.getVoteCount());
+            movie.setReleaseDate(koDetailRaw.getReleaseDate());
+            movie.setProductions(productions);
+            movie.setRuntime(koDetailRaw.getRuntime());
+            movie.setTagline(koDetailRaw.getTagline());
+            movie.setOriginalTagline(enDetailRaw.getTagline());
 
-            return MovieStoreResult.builder().success(true).build();
+            this.movieTemplateRepository.upsertMovie(movie);
+
+            return Result.builder().id(id).success(true).build();
         } catch (Exception ex) {
-            return MovieStoreResult.builder().id(0L).success(false).build();
+            log.error(ex.getMessage());
+            log.error(Arrays.toString(ex.getStackTrace()));
+            return Result.builder().id(0L).success(false).build();
         }
     }
 }

@@ -7,5 +7,6 @@ import lombok.Data;
 @Builder
 public class Keyword {
     private Long id;
+
     private String name;
 }

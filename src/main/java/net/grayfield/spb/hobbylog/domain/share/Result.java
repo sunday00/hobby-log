@@ -7,5 +7,6 @@ import lombok.Data;
 @Builder
 public class Result {
     private Long id;
+
     private Boolean success;
 }

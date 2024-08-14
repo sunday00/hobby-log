@@ -1,11 +1,14 @@
 package net.grayfield.spb.hobbylog.domain.share;
 
-import java.util.Date;
+import java.time.LocalDate;
+
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 
+@Data
 public abstract class BaseSchema {
     @Id
-    protected String id;
+    protected Long id;
 
     protected String userId;
 
@@ -13,5 +16,5 @@ public abstract class BaseSchema {
 
     protected String title;
 
-    protected Date logAt;
+    protected LocalDate logAt;
 }

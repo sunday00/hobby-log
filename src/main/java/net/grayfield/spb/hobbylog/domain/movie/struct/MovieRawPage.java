@@ -49,6 +49,7 @@ class Item {
 @Data
 public class MovieRawPage {
     private Long page;
+
     private List<Item> results;
 
     @JsonProperty("total_pages")

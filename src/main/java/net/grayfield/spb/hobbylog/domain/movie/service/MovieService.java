@@ -1,17 +1,18 @@
 package net.grayfield.spb.hobbylog.domain.movie.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.grayfield.spb.hobbylog.domain.movie.struct.MovieRawPage;
+import net.grayfield.spb.hobbylog.domain.movie.repository.MovieRepository;
+import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepository;
+import net.grayfield.spb.hobbylog.domain.movie.struct.*;
+import net.grayfield.spb.hobbylog.domain.share.Category;
+import net.grayfield.spb.hobbylog.domain.share.Result;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -19,30 +20,126 @@ import java.util.Map;
 public class MovieService {
     @Value("${tmdb.api_key}")
     private String tmdbApiKey;
-    //https://api.themoviedb.org/3/search/movie?query=Jack+Reacher&api_key=API_KEY
 
-    public void searchMovieFromTMDB(String search, Long page) throws JsonProcessingException {
-        RestClient client = RestClient.builder()
-                .baseUrl("https://api.themoviedb.org")
-                .messageConverters(conv -> {
-                    conv.addFirst(new MappingJackson2HttpMessageConverter());
-                    conv.add(new StringHttpMessageConverter());
-                })
-                .build();
+    @Value("${tmdb.api_token}")
+    private String tmdbApiToken;
 
-        MovieRawPage result = client.get()
+    private final RestClient movieBaseClient;
+    private final MovieRepository movieRepository;
+    private final MovieTemplateRepository movieTemplateRepository;
+
+    public MovieRawPage searchMovieFromTMDB(String search, Long page) {
+        return movieBaseClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/3/search/movie")
                         .queryParam("query", search.replace(" ", "+"))
+                        .queryParam("language", "ko")
                         .queryParam("api_key", tmdbApiKey)
                         .queryParam("page", page)
                         .build()
                 )
                 .retrieve()
                 .body(MovieRawPage.class);
+    }
 
-//        ObjectMapper mapper = new ObjectMapper();
-//        log.info("{}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
-        log.info("{}", result);
+    public MovieRawDetail getMovieDetail(Long movieId, String language) {
+        MovieRawDetail result = null;
+
+        try {
+            result = this.movieBaseClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/3/movie/" + movieId)
+                            .queryParam("language", language)
+                            .build()
+                    )
+                    .header("Authorization", "Bearer " + tmdbApiToken)
+                    .retrieve()
+                    .body(MovieRawDetail.class);
+        } catch (Exception e) {
+            log.error(Arrays.toString(e.getStackTrace()));
+        }
+
+        return result;
+    }
+
+    public MovieRawCredit getMovieCredits(Long movieId, String language) {
+        MovieRawCredit result = null;
+
+        try {
+            result = this.movieBaseClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/3/movie/" + movieId + "/credits")
+                            .queryParam("language", language)
+                            .build()
+                    )
+                    .header("Authorization", "Bearer " + tmdbApiToken)
+                    .retrieve()
+                    .body(MovieRawCredit.class);
+        } catch (Exception ex) {
+            log.error("{}", Arrays.toString(ex.getStackTrace()));
+            log.error(String.valueOf(ex.getCause()));
+        }
+        return result;
+    }
+
+    public MovieRawKeyword getMovieKeywords(Long movieId) {
+        return this.movieBaseClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/3/movie/" + movieId + "/keywords")
+                        .build()
+                )
+                .header("Authorization", "Bearer " + tmdbApiToken)
+                .retrieve()
+                .body(MovieRawKeyword.class);
+    }
+
+    public Result store(
+            Long id,
+            MovieRawDetail koDetailRaw, MovieRawDetail enDetailRaw, MovieRawCredit creditRaw, MovieRawKeyword keywordRaw,
+            String content, Integer stars
+    ) {
+        try {
+            List<Crew> directors = creditRaw.getCrews().stream().filter(c -> c.getJob().equals("Director")).toList();
+            List<Casting> castings = creditRaw.getCasts().stream().filter(c -> c.getDepartment().equals("Acting")).toList();
+            List<String> genres = koDetailRaw.getGenres().stream().map(Genre::getName).toList();
+            List<String> keywords = keywordRaw.getKeywords().stream().map(Keyword::getName).toList();
+            List<String> productions = enDetailRaw.getProductionCompaniesName();
+
+            Movie movie = new Movie();
+            movie.setId(id);
+            movie.setCategory(Category.MOVIE);
+            movie.setAdult(koDetailRaw.getAdult());
+            movie.setTitle(koDetailRaw.getTitle());
+            movie.setOriginalTitle(enDetailRaw.getOriginalTitle());
+            movie.setThumbnail(koDetailRaw.getPosterPath());
+            movie.setBudget(koDetailRaw.getBudget());
+            movie.setRevenue(koDetailRaw.getRevenue());
+            movie.setOriginalCountry(enDetailRaw.getOriginalCountry());
+            movie.setLanguage(koDetailRaw.getOriginalLanguage());
+            movie.setDirectors(directors);
+            movie.setActors(castings);
+            movie.setGenres(genres);
+            movie.setKeywords(keywords);
+            movie.setSynopsis(koDetailRaw.getOverview());
+            movie.setOriginalSynopsis(enDetailRaw.getOverview());
+            movie.setContents(content);
+            movie.setStars(stars);
+            movie.setPopularity(koDetailRaw.getPopularity());
+            movie.setVoteAverage(koDetailRaw.getVoteAverage());
+            movie.setVoteCount(koDetailRaw.getVoteCount());
+            movie.setReleaseDate(koDetailRaw.getReleaseDate());
+            movie.setProductions(productions);
+            movie.setRuntime(koDetailRaw.getRuntime());
+            movie.setTagline(koDetailRaw.getTagline());
+            movie.setOriginalTagline(enDetailRaw.getTagline());
+
+            this.movieTemplateRepository.upsertMovie(movie);
+
+            return Result.builder().id(id).success(true).build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            log.error(Arrays.toString(ex.getStackTrace()));
+            return Result.builder().id(0L).success(false).build();
+        }
     }
 }

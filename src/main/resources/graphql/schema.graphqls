@@ -1,3 +1,10 @@
+scalar Long
+
 type Query {}
 
 type Mutation {}
+
+type Result {
+    id: Long
+    success: Boolean
+}

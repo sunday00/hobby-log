@@ -1,0 +1,14 @@
+###
+GRAPHQL http://localhost:8081/graphql
+
+query  sign($code: String) {
+    sign(code: $code) {
+        accessToken
+    }
+}
+
+{
+  "code": "tKNheO3sUOGg-OfGEsEvsJzr5JymYKeTqoJSrtgatYsb3OBu4QuZfgAAAAQKKiVOAAABkVEZ5_fSDh85zpcCzQ"
+}
+
+<> 2024-08-12T212459.200.json

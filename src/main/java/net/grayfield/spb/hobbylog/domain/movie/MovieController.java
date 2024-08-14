@@ -6,17 +6,13 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.movie.service.MovieService;
-import net.grayfield.spb.hobbylog.domain.user.struct.Role;
-import org.springframework.beans.factory.annotation.Value;
+import net.grayfield.spb.hobbylog.domain.movie.struct.*;
+import net.grayfield.spb.hobbylog.domain.share.Result;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -24,22 +20,30 @@ import java.util.List;
 public class MovieController {
     private final MovieService movieService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
-    public Role testRole (GraphQLContext context, DataFetchingEnvironment e) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("{}", authentication);
+    public Result logMovie (
+            @Argument Long id, @Argument String content, @Argument Integer stars,
+            GraphQLContext context, DataFetchingEnvironment e
+    ) {
+        MovieRawDetail koDetailRaw = this.movieService.getMovieDetail(id, "ko-KR");
+        MovieRawDetail enDetailRaw = this.movieService.getMovieDetail(id, "en-US");
 
-        authentication.getAuthorities().forEach(a -> log.info("{}", a.getAuthority()));
+        MovieRawCredit creditRaw = this.movieService.getMovieCredits(id, "ko-KR");
+        MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(id);
 
-
-        return Role.ROLE_USER;
+        return this.movieService.store(
+                id,
+                koDetailRaw, enDetailRaw, creditRaw, keywordRaw,
+                content, stars
+        );
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @QueryMapping
-    public List<String> searchMovies (@Argument String search, @Argument Long page, DataFetchingEnvironment e) throws JsonProcessingException {
-        this.movieService.searchMovieFromTMDB(search, page);
-        return List.of("");
+    public MovieRawPage searchMovies (@Argument String search, @Argument Long page, DataFetchingEnvironment e) throws JsonProcessingException {
+        return this.movieService.searchMovieFromTMDB(search, page);
     }
+
+
 }

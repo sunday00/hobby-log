@@ -1,0 +1,47 @@
+###
+GRAPHQL http://localhost:8081/graphql
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+query  searchMovies($search: String, $page: Long) {
+    searchMovies(search: $search, page: $page) {
+        page
+        totalPages
+        totalResults
+        results {
+            id
+            title
+            originalTitle
+            adult
+            video
+            backdropPath
+            posterPath
+            genreIds
+            originalLanguage
+            overview
+            popularity
+            releaseDate
+            voteAverage
+            voteCount
+        }
+    }
+}
+
+{
+  "search": "the mask",
+  "page": 1
+}
+
+###
+GRAPHQL http://localhost:8081/graphql
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+mutation  logMovie($id: Long) {
+    logMovie(id: $id, stars: 4, content: "짐캐리 너무 좋아!!") {
+        id
+        success
+    }
+}
+
+{
+  "id": 854
+}

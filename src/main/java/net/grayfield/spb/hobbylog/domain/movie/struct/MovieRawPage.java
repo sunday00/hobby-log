@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 class Item {
-    boolean adult;
+    Boolean adult;
 
     @JsonProperty("backdrop_path")
     String backdropPath;
@@ -36,19 +36,20 @@ class Item {
 
     String title;
 
-    boolean video;
+    Boolean video;
 
     @JsonProperty("vote_average")
     Float voteAverage;
 
     @JsonProperty("vote_count")
-    int voteCount;
+    Long voteCount;
 }
 
 
 @Data
 public class MovieRawPage {
     private Long page;
+
     private List<Item> results;
 
     @JsonProperty("total_pages")

@@ -40,8 +40,13 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
     @NonNull
     public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, @NotNull Chain chain) {
         AtomicReference<Boolean> isDocumentHasSignPath = new AtomicReference<>(false);
+        AtomicReference<Boolean> isGraphqlPath = new AtomicReference<>(false);
         AtomicReference<Integer> selectionSetSize = new AtomicReference<>(0);
         AtomicReference<SourceLocation> signLocation = new AtomicReference<>(SourceLocation.EMPTY);
+
+        if(Objects.equals(request.getOperationName(), "IntrospectionQuery")) {
+            isGraphqlPath.set(true);
+        }
 
         Document doc = Parser.parse(request.getDocument());
         doc.getDefinitions().forEach(d -> {
@@ -64,50 +69,30 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                 .doFirst(() -> {
                     if ((doc.getDefinitions().size() > 1 || selectionSetSize.get() > 1) && Boolean.TRUE.equals(isDocumentHasSignPath.get())) {
                         throw new SignWithOtherException("Sign method should triggered Alone.");
-                    } else if (doc.getDefinitions().size() == 1 && Boolean.TRUE.equals(isDocumentHasSignPath.get())) {
+                    } else if (doc.getDefinitions().size() == 1 && (Boolean.TRUE.equals(isDocumentHasSignPath.get()))) {
+                        return;
+                    } else if (Boolean.TRUE.equals(isGraphqlPath.get())) {
                         return;
                     }
 
-                    String jwtToken = Objects.requireNonNull(request.getHeaders().getFirst("Authorization")).replaceFirst("[b|B]aerer ", "");
+                    String jwtToken = Objects.requireNonNull(request.getHeaders().getFirst("Authorization")).replaceFirst("[b|B]earer ", "");
                     log.info("jwtToken: {}", jwtToken);
 
                     String userId = this.jwtService.getUserIdFromJwtToken(jwtToken);
                     log.info("userId: {}", userId);
 
-                    User user = this.userService.getUserFromSession(userId);
-
-                    if (user == null) {
-                        user = this.userService.findOneById(userId);
-                        try {
-                            this.userService.createUserSession(user);
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                    User user = this.userService.createUserSessionById(userId);
 
                     UserAuthentication authentication = new UserAuthentication(user);
                     authentication.setAuthenticated(true);
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 })
-                .onErrorResume(SignWithOtherException.class, ex -> {
-                    GraphQLError err = GraphQLError.newError()
-                            .message(ex.getMessage())
-                            .path(List.of("sign"))
-                            .location(signLocation.get())
-                            .build();
-                    ExecutionResult result = new ExecutionResultImpl(err);
-                    ExecutionGraphQlResponse egr = new DefaultExecutionGraphQlResponse(request.toExecutionInput(), result);
-                    return Mono.just(new WebGraphQlResponse(egr));
-                })
-                .onErrorResume(ex -> {
-                    GraphQLError err = GraphQLError.newError()
-                            .message(ex.getMessage())
-                            .location(signLocation.get())
-                            .build();
-                    ExecutionResult result = new ExecutionResultImpl(err);
-                    ExecutionGraphQlResponse egr = new DefaultExecutionGraphQlResponse(request.toExecutionInput(), result);
-                    return Mono.just(new WebGraphQlResponse(egr));
-                });
+                .onErrorResume(SignWithOtherException.class, ex ->
+                    this.jwtService.errorResult(request, ex, "sign", signLocation.get())
+                )
+                .onErrorResume(Exception.class, ex ->
+                    this.jwtService.errorResult(request, ex, null, signLocation.get())
+                );
     }
 }

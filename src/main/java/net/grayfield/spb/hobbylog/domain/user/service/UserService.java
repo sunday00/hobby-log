@@ -63,4 +63,19 @@ public class UserService {
         String key = "session:" + userId;
         return (User) this.redisTemplate.opsForValue().get(key);
     }
+
+    public User createUserSessionById(String userId) {
+        User user = this.getUserFromSession(userId);
+
+        if (user == null) {
+            user = this.findOneById(userId);
+            try {
+                this.createUserSession(user);
+            } catch (JsonProcessingException e) {
+                log.error(e.getMessage());
+            }
+        }
+
+        return user;
+    }
 }

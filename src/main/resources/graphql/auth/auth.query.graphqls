@@ -6,3 +6,9 @@ type Auth {
     accessToken: String
     #TODO: refresh token
 }
+
+enum Role {
+    ROLE_GUEST
+    ROLE_USER
+    ROLE_ADMIN
+}

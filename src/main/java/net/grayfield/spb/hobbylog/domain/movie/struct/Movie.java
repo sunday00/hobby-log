@@ -11,23 +11,53 @@ import java.util.List;
 @Document
 @EqualsAndHashCode(callSuper = true)
 public class Movie extends BaseSchema {
-    Movie () {
+    public Movie () {
         this.category = Category.MOVIE;
     }
 
+    private Boolean adult;
+
+    private String originalTitle;
+
     private String thumbnail;
 
-    private String director;
+    private Long budget;
 
-    private List<String> actors;
+    private Long revenue;
 
-    private String mainGenre;
+    private List<String> originalCountry;
+
+    private String language;
+
+    private List<Crew> directors;
+
+    private List<Casting> actors;
+
+    private List<String> genres;
 
     private List<String> keywords;
 
     private String synopsis;
 
+    private String originalSynopsis;
+
     private String contents;
 
     private int stars;
+
+    private float popularity;
+
+    private float voteAverage;
+
+    private Long voteCount;
+
+    private List<String> productions;
+
+    private String releaseDate;
+
+    private int runtime;
+
+    private String tagline;
+
+    private String originalTagline;
 }

@@ -22,7 +22,7 @@ public class SecureConfig {
             .authorizeHttpRequests(
                 requests ->
                     requests
-                        .requestMatchers("/graphql", "/graphiql").permitAll()
+                        .requestMatchers("/graphql", "/graphiql", "/graphql/**").permitAll()
                         .anyRequest().denyAll()
             )
             .sessionManagement(

@@ -23,7 +23,7 @@ public class MovieController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
     public Result logMovie (
-            @Argument Long id, @Argument String content, @Argument Integer stars,
+            @Argument Long id, @Argument String content, @Argument Integer ratings,
             GraphQLContext context, DataFetchingEnvironment e
     ) {
         MovieRawDetail koDetailRaw = this.movieService.getMovieDetail(id, "ko-KR");
@@ -32,10 +32,14 @@ public class MovieController {
         MovieRawCredit creditRaw = this.movieService.getMovieCredits(id, "ko-KR");
         MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(id);
 
+        this.movieService.storeRemote(id, ratings);
+
+        //TODO: add review remote TMDB
+
         return this.movieService.store(
                 id,
                 koDetailRaw, enDetailRaw, creditRaw, keywordRaw,
-                content, stars
+                content, ratings
         );
     }
 

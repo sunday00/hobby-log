@@ -1,3 +1,3 @@
 extend type Mutation {
-    logMovie(id: Long, content: String, stars: Int): Result
+    logMovie(id: Long, content: String, ratings: Int): Result
 }

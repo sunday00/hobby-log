@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -98,7 +99,7 @@ public class MovieService {
     public Result store(
             Long id,
             MovieRawDetail koDetailRaw, MovieRawDetail enDetailRaw, MovieRawCredit creditRaw, MovieRawKeyword keywordRaw,
-            String content, Integer stars
+            String content, Integer ratings
     ) {
         try {
             List<Crew> directors = creditRaw.getCrews().stream().filter(c -> c.getJob().equals("Director")).toList();
@@ -116,7 +117,6 @@ public class MovieService {
                     movie
             );
 
-
             movie.setCategory(Category.MOVIE);
             movie.setAdult(koDetailRaw.getAdult());
             movie.setTitle(koDetailRaw.getTitle());
@@ -133,7 +133,7 @@ public class MovieService {
             movie.setSynopsis(koDetailRaw.getOverview());
             movie.setOriginalSynopsis(enDetailRaw.getOverview());
             movie.setContents(content);
-            movie.setStars(stars);
+            movie.setRatings(ratings);
             movie.setPopularity(koDetailRaw.getPopularity());
             movie.setVoteAverage(koDetailRaw.getVoteAverage());
             movie.setVoteCount(koDetailRaw.getVoteCount());
@@ -151,5 +151,28 @@ public class MovieService {
             log.error(Arrays.toString(ex.getStackTrace()));
             return Result.builder().id(0L).success(false).build();
         }
+    }
+
+    public void storeRemote(Long id, Integer ratings) {
+        float rating = ratings.floatValue() / 10;
+        float underOne = rating - (ratings / 10);
+
+        if (underOne < 0.3) {
+            rating = ratings / 10;
+        } else if (underOne < 0.7) {
+            rating = ratings / 10 + 0.5f;
+        } else {
+            rating = ratings / 10 + 1f;
+        }
+
+        this.movieBaseClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/3/movie/" + id + "/rating")
+                        .build()
+                )
+                .body(Map.of("value", rating))
+                .header("Authorization", "Bearer " + tmdbApiToken)
+                .retrieve()
+            ;
     }
 }

@@ -2,6 +2,7 @@ package net.grayfield.spb.hobbylog.domain.movie.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieRepository;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
@@ -24,6 +25,7 @@ public class MovieService {
     @Value("${tmdb.api_token}")
     private String tmdbApiToken;
 
+    private final ImageService imageService;
     private final RestClient movieBaseClient;
     private final MovieRepository movieRepository;
     private final MovieTemplateRepository movieTemplateRepository;
@@ -105,13 +107,18 @@ public class MovieService {
             List<String> keywords = keywordRaw.getKeywords().stream().map(Keyword::getName).toList();
             List<String> productions = enDetailRaw.getProductionCompaniesName();
 
+            String localPosterImage = this.imageService.storeFromUrl(
+                    "https://image.tmdb.org/t/p/w200"
+                        + koDetailRaw.getPosterPath()
+            );
+
             Movie movie = new Movie();
             movie.setId(id);
             movie.setCategory(Category.MOVIE);
             movie.setAdult(koDetailRaw.getAdult());
             movie.setTitle(koDetailRaw.getTitle());
             movie.setOriginalTitle(enDetailRaw.getOriginalTitle());
-            movie.setThumbnail(koDetailRaw.getPosterPath());
+            movie.setThumbnail(localPosterImage);
             movie.setBudget(koDetailRaw.getBudget());
             movie.setRevenue(koDetailRaw.getRevenue());
             movie.setOriginalCountry(enDetailRaw.getOriginalCountry());

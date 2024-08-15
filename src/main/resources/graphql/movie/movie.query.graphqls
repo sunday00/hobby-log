@@ -9,7 +9,7 @@ type MovieRawPge {
     totalResults: Long
 }
 
-type Movie {
+type Movie implements Hobby {
     id: Long
     title: String
     originalTitle: String

@@ -8,3 +8,8 @@ type Result {
     id: Long
     success: Boolean
 }
+
+interface Hobby {
+    id: Long
+    title: String
+}

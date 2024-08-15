@@ -3,6 +3,7 @@ package net.grayfield.spb.hobbylog.domain.image;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
+import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class ImageService {
         try {
             BufferedImage image = ImageIO.read(URI.create(url).toURL());
 
-            String folder = this.makeFolder();
+            String folder = this.makeFolder(true);
             String newFileName = this.generateNewName();
             fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
@@ -40,8 +41,30 @@ public class ImageService {
         return fullFilePath;
     }
 
-    public String makeFolder () {
-        String folderPath = "/images/upload/" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    public String storeFromUrl (String url, Movie movie) {
+        String fullFilePath = "";
+
+        try {
+            BufferedImage image = ImageIO.read(URI.create(url).toURL());
+
+            String folder = this.makeFolder(false);
+            String newFileName = this.generateMovieImageName(movie);
+            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
+
+            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
+    }
+
+    public String makeFolder (boolean withDateFolder) {
+        String folderPath = "/images/upload";
+
+        if(withDateFolder)  {
+            folderPath = folderPath + FileSystems.getDefault().getSeparator() +  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        }
 
         File uploadPathFolder = new File(CLASS_PATH + folderPath);
 
@@ -62,5 +85,9 @@ public class ImageService {
         String randomStr = faker.lorem().characters(8);
 
         return userId +"-"+ hms +"-"+ randomStr;
+    }
+
+    public String generateMovieImageName(Movie movie) {
+        return "movie-poster-" + movie.getId();
     }
 }

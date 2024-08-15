@@ -107,13 +107,16 @@ public class MovieService {
             List<String> keywords = keywordRaw.getKeywords().stream().map(Keyword::getName).toList();
             List<String> productions = enDetailRaw.getProductionCompaniesName();
 
-            String localPosterImage = this.imageService.storeFromUrl(
-                    "https://image.tmdb.org/t/p/w200"
-                        + koDetailRaw.getPosterPath()
-            );
-
             Movie movie = new Movie();
             movie.setId(id);
+
+            String localPosterImage = this.imageService.storeFromUrl(
+                    "https://image.tmdb.org/t/p/w200"
+                        + koDetailRaw.getPosterPath(),
+                    movie
+            );
+
+
             movie.setCategory(Category.MOVIE);
             movie.setAdult(koDetailRaw.getAdult());
             movie.setTitle(koDetailRaw.getTitle());

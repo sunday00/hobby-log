@@ -1,6 +1,5 @@
 package net.grayfield.spb.hobbylog.domain.movie;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +44,7 @@ public class MovieController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @QueryMapping
-    public MovieRawPage searchMovies (@Argument String search, @Argument Long page, DataFetchingEnvironment e) throws JsonProcessingException {
+    public MovieRawPage searchMovies (@Argument String search, @Argument Long page, DataFetchingEnvironment e) {
         return this.movieService.searchMovieFromTMDB(search, page);
     }
 

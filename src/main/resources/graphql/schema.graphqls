@@ -1,4 +1,5 @@
 scalar Long
+scalar DateTime
 
 type Query {}
 
@@ -12,4 +13,7 @@ type Result {
 interface Hobby {
     id: Long
     title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
 }

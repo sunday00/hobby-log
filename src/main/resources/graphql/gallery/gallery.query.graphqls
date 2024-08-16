@@ -1,0 +1,21 @@
+
+
+enum GalleryType {
+    SOLO
+    ORGANIZATION
+    STUDENT
+    SPECIAL
+    CLASSIC
+}
+
+type Gallery implements Hobby {
+    id: Long
+    title: String
+    galleryType: GalleryType
+    location: String
+    thumbnail: String
+    overview: String
+    content: String
+    ratings: Int
+    logAt: DateTime
+}

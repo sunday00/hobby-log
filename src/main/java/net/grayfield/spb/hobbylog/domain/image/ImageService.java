@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
+import net.grayfield.spb.hobbylog.domain.share.Category;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,27 @@ public class ImageService {
         return fullFilePath;
     }
 
+    public String storeFromUrl (Category category, String url, LocalDateTime localDateTime) {
+        String fullFilePath = "";
+
+        try {
+
+            BufferedImage image = ImageIO.read(URI.create(url).toURL());
+
+            // TODO: resize image
+
+            String folder = this.makeFolder(false);
+            String newFileName = this.generateCategoryImageName(category, localDateTime);
+            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
+
+            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
+    }
+
     public String makeFolder (boolean withDateFolder) {
         String folderPath = "/images/upload";
 
@@ -89,5 +111,9 @@ public class ImageService {
 
     public String generateMovieImageName(Movie movie) {
         return "movie-poster-" + movie.getId();
+    }
+
+    private String generateCategoryImageName(Category category, LocalDateTime localDateTime) {
+        return category.name() + "-" + localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

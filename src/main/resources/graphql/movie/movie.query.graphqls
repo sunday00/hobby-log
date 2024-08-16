@@ -4,12 +4,12 @@ extend type Query {
 
 type MovieRawPge {
     page: Long
-    results: [Movie]
+    results: [MovieRaw]
     totalPages: Long
     totalResults: Long
 }
 
-type Movie implements Hobby {
+type MovieRaw {
     id: Long
     title: String
     originalTitle: String

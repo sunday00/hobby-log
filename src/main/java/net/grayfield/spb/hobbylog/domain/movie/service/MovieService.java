@@ -8,6 +8,7 @@ import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepositor
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
 import net.grayfield.spb.hobbylog.domain.share.Category;
 import net.grayfield.spb.hobbylog.domain.share.Result;
+import net.grayfield.spb.hobbylog.domain.share.Status;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -142,6 +143,7 @@ public class MovieService {
             movie.setRuntime(koDetailRaw.getRuntime());
             movie.setTagline(koDetailRaw.getTagline());
             movie.setOriginalTagline(enDetailRaw.getTagline());
+            movie.setStatus(Status.DRAFT);
 
             this.movieTemplateRepository.upsertMovie(movie);
 

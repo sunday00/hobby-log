@@ -17,4 +17,6 @@ public abstract class BaseSchema {
     protected String title;
 
     protected LocalDateTime logAt;
+
+    protected Status status;
 }

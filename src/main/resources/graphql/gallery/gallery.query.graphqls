@@ -1,5 +1,3 @@
-
-
 enum GalleryType {
     SOLO
     ORGANIZATION
@@ -11,6 +9,7 @@ enum GalleryType {
 type Gallery implements Hobby {
     id: Long
     title: String
+    category: Category
     galleryType: GalleryType
     location: String
     thumbnail: String

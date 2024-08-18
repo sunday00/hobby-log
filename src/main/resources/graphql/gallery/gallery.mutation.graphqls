@@ -1,0 +1,15 @@
+extend type Mutation {
+    createGalleryLog(galleryInput: GalleryInput): Result
+}
+
+input GalleryInput {
+    id: Long
+    title: String!
+    galleryType: GalleryType!
+    location: String!
+    thumbnail: String
+    overview: String
+    content: String
+    ratings: Int!
+    logAt: String
+}

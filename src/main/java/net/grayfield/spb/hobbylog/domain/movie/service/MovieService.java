@@ -2,17 +2,20 @@ package net.grayfield.spb.hobbylog.domain.movie.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieRepository;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
 import net.grayfield.spb.hobbylog.domain.share.Category;
 import net.grayfield.spb.hobbylog.domain.share.Result;
+import net.grayfield.spb.hobbylog.domain.share.Status;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -24,6 +27,7 @@ public class MovieService {
     @Value("${tmdb.api_token}")
     private String tmdbApiToken;
 
+    private final ImageService imageService;
     private final RestClient movieBaseClient;
     private final MovieRepository movieRepository;
     private final MovieTemplateRepository movieTemplateRepository;
@@ -96,7 +100,7 @@ public class MovieService {
     public Result store(
             Long id,
             MovieRawDetail koDetailRaw, MovieRawDetail enDetailRaw, MovieRawCredit creditRaw, MovieRawKeyword keywordRaw,
-            String content, Integer stars
+            String content, Integer ratings
     ) {
         try {
             List<Crew> directors = creditRaw.getCrews().stream().filter(c -> c.getJob().equals("Director")).toList();
@@ -107,11 +111,18 @@ public class MovieService {
 
             Movie movie = new Movie();
             movie.setId(id);
+
+            String localPosterImage = this.imageService.storeFromUrl(
+                    "https://image.tmdb.org/t/p/w200"
+                        + koDetailRaw.getPosterPath(),
+                    movie
+            );
+
             movie.setCategory(Category.MOVIE);
             movie.setAdult(koDetailRaw.getAdult());
             movie.setTitle(koDetailRaw.getTitle());
             movie.setOriginalTitle(enDetailRaw.getOriginalTitle());
-            movie.setThumbnail(koDetailRaw.getPosterPath());
+            movie.setThumbnail(localPosterImage);
             movie.setBudget(koDetailRaw.getBudget());
             movie.setRevenue(koDetailRaw.getRevenue());
             movie.setOriginalCountry(enDetailRaw.getOriginalCountry());
@@ -123,7 +134,7 @@ public class MovieService {
             movie.setSynopsis(koDetailRaw.getOverview());
             movie.setOriginalSynopsis(enDetailRaw.getOverview());
             movie.setContents(content);
-            movie.setStars(stars);
+            movie.setRatings(ratings);
             movie.setPopularity(koDetailRaw.getPopularity());
             movie.setVoteAverage(koDetailRaw.getVoteAverage());
             movie.setVoteCount(koDetailRaw.getVoteCount());
@@ -132,6 +143,7 @@ public class MovieService {
             movie.setRuntime(koDetailRaw.getRuntime());
             movie.setTagline(koDetailRaw.getTagline());
             movie.setOriginalTagline(enDetailRaw.getTagline());
+            movie.setStatus(Status.DRAFT);
 
             this.movieTemplateRepository.upsertMovie(movie);
 
@@ -141,5 +153,28 @@ public class MovieService {
             log.error(Arrays.toString(ex.getStackTrace()));
             return Result.builder().id(0L).success(false).build();
         }
+    }
+
+    public void storeRemote(Long id, Integer ratings) {
+        float rating = ratings.floatValue() / 10;
+        float underOne = rating - (ratings / 10);
+
+        if (underOne < 0.3) {
+            rating = ratings / 10;
+        } else if (underOne < 0.7) {
+            rating = ratings / 10 + 0.5f;
+        } else {
+            rating = ratings / 10 + 1f;
+        }
+
+        this.movieBaseClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/3/movie/" + id + "/rating")
+                        .build()
+                )
+                .body(Map.of("value", rating))
+                .header("Authorization", "Bearer " + tmdbApiToken)
+                .retrieve()
+            ;
     }
 }

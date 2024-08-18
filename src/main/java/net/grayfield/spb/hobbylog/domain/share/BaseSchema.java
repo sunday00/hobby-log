@@ -1,6 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.share;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -16,5 +16,7 @@ public abstract class BaseSchema {
 
     protected String title;
 
-    protected LocalDate logAt;
+    protected LocalDateTime logAt;
+
+    protected Status status;
 }

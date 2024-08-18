@@ -1,7 +1,5 @@
 package net.grayfield.spb.hobbylog.aop.interceptors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import graphql.*;
 import graphql.language.Document;
 import graphql.language.Field;
 import graphql.language.SelectionSet;
@@ -16,11 +14,9 @@ import net.grayfield.spb.hobbylog.domain.user.service.UserService;
 import net.grayfield.spb.hobbylog.domain.user.struct.User;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.graphql.ExecutionGraphQlResponse;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlResponse;
-import org.springframework.graphql.support.DefaultExecutionGraphQlResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -71,15 +67,15 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                         throw new SignWithOtherException("Sign method should triggered Alone.");
                     } else if (doc.getDefinitions().size() == 1 && (Boolean.TRUE.equals(isDocumentHasSignPath.get()))) {
                         return;
-                    } else if (Boolean.TRUE.equals(isGraphqlPath.get())) {
+                    } else if (Boolean.TRUE.equals(isGraphqlPath.get()) || request.getUri().toString().startsWith("/upload")) {
                         return;
                     }
 
-                    String jwtToken = Objects.requireNonNull(request.getHeaders().getFirst("Authorization")).replaceFirst("[b|B]earer ", "");
-                    log.info("jwtToken: {}", jwtToken);
+                    String jwtToken = Objects.requireNonNull(request.getHeaders()
+                            .getFirst("Authorization"))
+                            .replaceFirst("[b|B]earer ", "");
 
                     String userId = this.jwtService.getUserIdFromJwtToken(jwtToken);
-                    log.info("userId: {}", userId);
 
                     User user = this.userService.createUserSessionById(userId);
 

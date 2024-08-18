@@ -1,6 +1,9 @@
 scalar Long
+scalar DateTime
 
-type Query {}
+type Query {
+    addSubImage(category: Category, id: Long, url: String, serial: Int): Result
+}
 
 type Mutation {}
 
@@ -8,3 +11,23 @@ type Result {
     id: Long
     success: Boolean
 }
+
+enum Category {
+    MOVIE,
+    GALLERY,
+    WALK,
+    DRAW,
+    READ,
+    ESSAY,
+}
+
+interface Hobby {
+    id: Long
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
+}
+
+

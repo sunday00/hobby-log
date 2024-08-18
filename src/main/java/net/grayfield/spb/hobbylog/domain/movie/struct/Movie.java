@@ -43,7 +43,7 @@ public class Movie extends BaseSchema {
 
     private String contents;
 
-    private int stars;
+    private int ratings;
 
     private float popularity;
 

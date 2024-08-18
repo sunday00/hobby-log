@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 
@@ -35,7 +35,7 @@ public class MovieTemplateRepository {
         update.set("userId", userId);
         update.set("category", movie.getCategory());
         update.set("title", movie.getTitle());
-        update.set("logAt", LocalDate.now(ZoneOffset.UTC));
+        update.set("logAt", LocalDateTime.now(ZoneOffset.UTC));
 
         Arrays.stream(Movie.class.getDeclaredFields()).toList().forEach(f -> {
             try {

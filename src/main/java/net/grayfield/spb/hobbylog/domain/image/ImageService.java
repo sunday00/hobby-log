@@ -109,6 +109,28 @@ public class ImageService {
         return fullFilePath;
     }
 
+    public String storeFromRemoteUrlSub(Category category, Long id, String url, int serial) {
+        String fullFilePath = "";
+
+        try {
+
+            BufferedImage image = ImageIO.read(URI.create(url).toURL());
+
+            image = this.resizeImage(image);
+
+            String folder = this.makeFolder(false);
+            String newFileName = this.generateSubImageName(category, id, serial);
+
+            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
+
+            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
+    }
+
     public BufferedImage resizeImage(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();

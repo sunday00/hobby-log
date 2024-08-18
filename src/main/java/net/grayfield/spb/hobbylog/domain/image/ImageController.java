@@ -16,10 +16,15 @@ public class ImageController {
 
     @QueryMapping
     public Result addSubImage(@Argument Category category, @Argument Long id, @Argument String url, @Argument int serial)  {
+        String path = "";
+
         if( url.startsWith("data:image/") ) {
-            String path = this.imageService.storeFromBase64(category, id, url, serial);
-            log.info("path: {}", path);
+            path = this.imageService.storeFromBase64(category, id, url, serial);
+        } else {
+            path = this.imageService.storeFromRemoteUrlSub(category, id, url, serial);
         }
+
+        log.info("path: {}", path);
 
         return Result.builder().id(id).success(true).build();
     }

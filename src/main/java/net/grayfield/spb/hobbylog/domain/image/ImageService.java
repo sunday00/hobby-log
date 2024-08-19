@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
+import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -182,7 +183,7 @@ public class ImageService {
     }
 
     public String generateCategoryImageName(Category category, LocalDateTime localDateTime) {
-        return category.name().toLowerCase() + "-" + localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH"));
+        return category.name().toLowerCase() + "-" + StaticHelper.getUserId() + "-" + localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH"));
     }
 
     public String generateSubImageName(Category category, Long id, int serial) {

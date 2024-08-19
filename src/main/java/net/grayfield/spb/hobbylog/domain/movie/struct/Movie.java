@@ -19,8 +19,6 @@ public class Movie extends BaseSchema {
 
     private String originalTitle;
 
-    private String thumbnail;
-
     private Long budget;
 
     private Long revenue;
@@ -42,8 +40,6 @@ public class Movie extends BaseSchema {
     private String originalSynopsis;
 
     private String contents;
-
-    private int ratings;
 
     private float popularity;
 

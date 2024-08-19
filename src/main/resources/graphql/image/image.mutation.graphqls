@@ -1,0 +1,10 @@
+extend type Mutation {
+    addSubImage(addSubImageInput: AddSubImageInput): Result
+}
+
+input AddSubImageInput {
+    category: Category,
+    id: Long,
+    url: String,
+    serial: Int
+}

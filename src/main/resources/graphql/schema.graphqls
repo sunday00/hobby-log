@@ -1,18 +1,6 @@
 scalar Long
 scalar DateTime
 
-type Query {}
-
-type Mutation {
-    addSubImage(addSubImageInput: AddSubImageInput): Result
-    updateStatus(updateStatusInput: UpdateStatusInput): Result
-}
-
-type Result {
-    id: Long
-    success: Boolean
-}
-
 enum Category {
     MOVIE,
     GALLERY,
@@ -22,30 +10,35 @@ enum Category {
     ESSAY,
 }
 
-interface Hobby {
-    id: Long
-    category: Category
-    title: String
-    thumbnail: String
-    ratings: Int
-    logAt: DateTime
-}
-
 enum Status {
     ACTIVE,
     DRAFT,
     DEPRECATED,
 }
 
-input AddSubImageInput {
-    category: Category,
-    id: Long,
-    url: String,
-    serial: Int
+interface BaseSchema {
+    id: Long
+    userId: String
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
+    status: Status
 }
 
-input UpdateStatusInput {
-    category: Category,
-    id: Long,
+type Result {
+    id: Long
+    success: Boolean
+}
+
+type Hobby implements BaseSchema {
+    id: Long
+    userId: String
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
     status: Status
 }

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.movie.service.MovieService;
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
-import net.grayfield.spb.hobbylog.domain.share.Result;
+import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;

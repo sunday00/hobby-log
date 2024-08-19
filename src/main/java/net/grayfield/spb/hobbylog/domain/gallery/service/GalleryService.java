@@ -7,8 +7,8 @@ import net.grayfield.spb.hobbylog.domain.gallery.repository.GalleryTemplateRepos
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
-import net.grayfield.spb.hobbylog.domain.share.Category;
-import net.grayfield.spb.hobbylog.domain.share.Status;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

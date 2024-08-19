@@ -3,7 +3,7 @@ package net.grayfield.spb.hobbylog.configs;
 import graphql.analysis.MaxQueryDepthInstrumentation;
 import graphql.scalars.ExtendedScalars;
 import lombok.extern.slf4j.Slf4j;
-import net.grayfield.spb.hobbylog.domain.share.GraphqlCustomSchema;
+import net.grayfield.spb.hobbylog.domain.share.struct.GraphqlCustomSchema;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

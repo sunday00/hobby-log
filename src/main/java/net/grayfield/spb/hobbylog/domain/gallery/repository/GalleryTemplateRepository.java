@@ -1,11 +1,10 @@
 package net.grayfield.spb.hobbylog.domain.gallery.repository;
 
-import com.mongodb.client.result.UpdateResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.internal.helper.WordUtils;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
-import net.grayfield.spb.hobbylog.domain.share.MongoAutoIncIdService;
+import net.grayfield.spb.hobbylog.domain.share.service.MongoAutoIncIdService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import org.bson.BsonValue;
 import org.springframework.data.mongodb.core.MongoTemplate;

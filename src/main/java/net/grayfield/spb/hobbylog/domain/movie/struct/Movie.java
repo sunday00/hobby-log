@@ -1,8 +1,8 @@
 package net.grayfield.spb.hobbylog.domain.movie.struct;
 
 import lombok.*;
-import net.grayfield.spb.hobbylog.domain.share.BaseSchema;
-import net.grayfield.spb.hobbylog.domain.share.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;

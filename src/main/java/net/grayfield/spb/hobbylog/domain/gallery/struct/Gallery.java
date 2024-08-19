@@ -16,11 +16,7 @@ public class Gallery extends BaseSchema {
 
     private String location;
 
-    private String thumbnail;
-
     private String overview;
 
     private String content;
-
-    private int ratings;
 }

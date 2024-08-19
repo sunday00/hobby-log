@@ -6,8 +6,9 @@ enum GalleryType {
     CLASSIC
 }
 
-type Gallery implements Hobby {
+type Gallery implements BaseSchema {
     id: Long
+    userId: String
     title: String
     category: Category
     galleryType: GalleryType
@@ -17,4 +18,5 @@ type Gallery implements Hobby {
     content: String
     ratings: Int
     logAt: DateTime
+    status: Status
 }

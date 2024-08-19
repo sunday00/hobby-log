@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.internal.helper.WordUtils;
 import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,10 +34,14 @@ public class MovieTemplateRepository {
         Query query = new Query(Criteria.where("id").is(movie.getId()));
         Update update = new Update();
 
+        update.set("id", movie.getId());
         update.set("userId", userId);
-        update.set("category", movie.getCategory());
+        update.set("category", Category.MOVIE);
         update.set("title", movie.getTitle());
+        update.set("thumbnail", movie.getThumbnail());
+        update.set("ratings", movie.getRatings());
         update.set("logAt", LocalDateTime.now(ZoneOffset.UTC));
+        update.set("status", Status.DRAFT);
 
         Arrays.stream(Movie.class.getDeclaredFields()).toList().forEach(f -> {
             try {

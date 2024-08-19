@@ -6,7 +6,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 @Data
-public abstract class BaseSchema {
+public class BaseSchema {
     @Id
     protected Long id;
 
@@ -15,6 +15,10 @@ public abstract class BaseSchema {
     protected Category category;
 
     protected String title;
+
+    protected String thumbnail;
+
+    protected int ratings;
 
     protected LocalDateTime logAt;
 

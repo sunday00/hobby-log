@@ -6,6 +6,8 @@ import net.datafaker.internal.helper.WordUtils;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.share.service.MongoAutoIncIdService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import org.bson.BsonValue;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -44,8 +46,14 @@ public class GalleryTemplateRepository {
             }
         }
 
+        update.set("id", gallery.getId());
         update.set("userId", userId);
+        update.set("category", Category.GALLERY);
+        update.set("title", gallery.getTitle());
+        update.set("thumbnail", gallery.getThumbnail());
+        update.set("ratings", gallery.getRatings());
         update.set("logAt", gallery.getLogAt());
+        update.set("status", Status.DRAFT);
 
         Arrays.stream(Gallery.class.getDeclaredFields()).toList().forEach(f -> {
             try {

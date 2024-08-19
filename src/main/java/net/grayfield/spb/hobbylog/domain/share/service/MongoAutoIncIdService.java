@@ -1,7 +1,8 @@
-package net.grayfield.spb.hobbylog.domain.share;
+package net.grayfield.spb.hobbylog.domain.share.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.share.struct.PrimarySequence;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;

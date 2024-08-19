@@ -1,4 +1,4 @@
-package net.grayfield.spb.hobbylog.domain.share;
+package net.grayfield.spb.hobbylog.domain.share.struct;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

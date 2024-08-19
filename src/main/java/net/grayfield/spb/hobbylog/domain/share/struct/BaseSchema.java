@@ -1,4 +1,4 @@
-package net.grayfield.spb.hobbylog.domain.share;
+package net.grayfield.spb.hobbylog.domain.share.struct;
 
 import java.time.LocalDateTime;
 

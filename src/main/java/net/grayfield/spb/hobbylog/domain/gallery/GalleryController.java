@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.gallery.service.GalleryService;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
-import net.grayfield.spb.hobbylog.domain.share.Result;
+import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
-import net.grayfield.spb.hobbylog.domain.share.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

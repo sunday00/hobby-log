@@ -1,11 +1,12 @@
 scalar Long
 scalar DateTime
 
-type Query {
-    addSubImage(category: Category, id: Long, url: String, serial: Int): Result
-}
+type Query {}
 
-type Mutation {}
+type Mutation {
+    addSubImage(category: Category, id: Long, url: String, serial: Int): Result
+    updateStatus(updateStatusInput: UpdateStatusInput): Result
+}
 
 type Result {
     id: Long
@@ -30,4 +31,14 @@ interface Hobby {
     logAt: DateTime
 }
 
+enum Status {
+    ACTIVE,
+    DRAFT,
+    DEPRECATED,
+}
 
+input UpdateStatusInput {
+    category: Category,
+    id: Long,
+    status: Status
+}

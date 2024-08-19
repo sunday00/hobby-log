@@ -2,8 +2,8 @@ package net.grayfield.spb.hobbylog.domain.gallery.struct;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.grayfield.spb.hobbylog.domain.share.BaseSchema;
-import net.grayfield.spb.hobbylog.domain.share.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data

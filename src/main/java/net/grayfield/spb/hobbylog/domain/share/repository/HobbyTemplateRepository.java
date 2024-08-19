@@ -49,7 +49,16 @@ public class HobbyTemplateRepository {
     public List<BaseSchema> findByMonth(String yyyy, String mm) {
         String userId = StaticHelper.getUserId();
 
-        LocalDateTime startD = LocalDateTime.parse(yyyy + "-" + mm + "-01T00:00:00");
+        LocalDateTime baseD = LocalDateTime.parse(yyyy + "-" + mm + "-01T00:00:00");
+
+        /*
+            between date is now prev month to current month.
+            because, on first week on current month,
+            main page will be too much clean and no data.
+
+            so, I decided to show logged hobby during two month.
+        */
+        LocalDateTime startD = baseD.minusMonths(1);
         LocalDateTime endD = startD.plusMonths(1);
 
         Criteria criteria = new Criteria()

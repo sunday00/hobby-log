@@ -4,7 +4,7 @@ scalar DateTime
 type Query {}
 
 type Mutation {
-    addSubImage(category: Category, id: Long, url: String, serial: Int): Result
+    addSubImage(addSubImageInput: AddSubImageInput): Result
     updateStatus(updateStatusInput: UpdateStatusInput): Result
 }
 
@@ -35,6 +35,13 @@ enum Status {
     ACTIVE,
     DRAFT,
     DEPRECATED,
+}
+
+input AddSubImageInput {
+    category: Category,
+    id: Long,
+    url: String,
+    serial: Int
 }
 
 input UpdateStatusInput {

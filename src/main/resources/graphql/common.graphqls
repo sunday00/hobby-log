@@ -8,6 +8,6 @@ type Mutation {
 
 input UpdateStatusInput {
     category: Category,
-    id: Long,
+    id: String,
     status: Status
 }

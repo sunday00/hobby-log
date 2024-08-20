@@ -52,7 +52,8 @@ class SpokenLanguages {
 
 @Data
 public class MovieRawDetail {
-    private Long id;
+    @JsonProperty("id")
+    private Long movieId;
 
     @JsonProperty("imdb_id")
     private String imdbId;

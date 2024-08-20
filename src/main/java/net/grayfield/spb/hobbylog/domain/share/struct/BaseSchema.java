@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Id;
 @Data
 public class BaseSchema {
     @Id
-    protected Long id;
+    protected String id;
 
     protected String userId;
 

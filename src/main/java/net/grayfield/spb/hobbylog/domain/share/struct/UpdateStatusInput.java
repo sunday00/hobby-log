@@ -6,7 +6,7 @@ import lombok.Data;
 public class UpdateStatusInput {
     private Category category;
 
-    private Long id;
+    private String id;
 
     private Status status;
 }

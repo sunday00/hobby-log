@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Result {
-    private Long id;
+    private String id;
 
     private Boolean success;
 }

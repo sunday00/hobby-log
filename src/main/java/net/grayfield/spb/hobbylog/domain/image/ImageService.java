@@ -85,7 +85,7 @@ public class ImageService {
         return fullFilePath;
     }
 
-    public String storeFromBase64(Category category, Long id, String base64Str, int serial) {
+    public String storeFromBase64(Category category, String id, String base64Str, int serial) {
         String fullFilePath = "";
 
         try {
@@ -110,7 +110,7 @@ public class ImageService {
         return fullFilePath;
     }
 
-    public String storeFromRemoteUrlSub(Category category, Long id, String url, int serial) {
+    public String storeFromRemoteUrlSub(Category category, String id, String url, int serial) {
         String fullFilePath = "";
 
         try {
@@ -186,7 +186,7 @@ public class ImageService {
         return category.name().toLowerCase() + "-" + StaticHelper.getUserId() + "-" + localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH"));
     }
 
-    public String generateSubImageName(Category category, Long id, int serial) {
+    public String generateSubImageName(Category category, String id, int serial) {
         return category.name().toLowerCase() + "-" + id + "-sub-" + serial;
     }
 }

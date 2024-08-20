@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.internal.helper.WordUtils;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
-import net.grayfield.spb.hobbylog.domain.share.service.MongoAutoIncIdService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
-import org.bson.BsonValue;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -24,30 +22,23 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class GalleryTemplateRepository {
     private final MongoTemplate mongoTemplate;
-    private final MongoAutoIncIdService mongoAutoIncIdService;
 
-    public Long upsertGallery(final Gallery gallery) {
+    public String upsertGallery(final Gallery gallery) {
         String userId = StaticHelper.getUserId();
 
-        Query query = new Query(Criteria.where("logAt").is(gallery.getLogAt()));
+        Query query = new Query(
+                Criteria.where("logAt").is(gallery.getLogAt())
+                        .and("userId").is(userId)
+        );
         Update update = new Update();
 
-        Gallery current;
-
         if(gallery.getId() != null) {
-            query = new Query(Criteria.where("id").is(gallery.getId()));
-            current = mongoTemplate.findOne(query, Gallery.class);
-        } else {
-            current = mongoTemplate.findOne(query, Gallery.class);
-            if(current != null) {
-                update.set("id", current.getId());
-            } else {
-                update.set("id", this.mongoAutoIncIdService.getNextValue());
-            }
+            query = new Query(
+                    Criteria.where("id").is(gallery.getId())
+                            .and("userId").is(userId)
+            );
         }
 
-        update.set("id", gallery.getId());
-        update.set("userId", userId);
         update.set("category", Category.GALLERY);
         update.set("title", gallery.getTitle());
         update.set("thumbnail", gallery.getThumbnail());
@@ -67,12 +58,8 @@ public class GalleryTemplateRepository {
             }
         });
 
-        BsonValue result = mongoTemplate.upsert(query, update, Gallery.class).getUpsertedId();
+        mongoTemplate.upsert(query, update, Gallery.class);
 
-        if (result != null) {
-            return result.asNumber().longValue();
-        } else {
-            return current != null ? current.getId() : 1L;
-        }
+        return mongoTemplate.find(query, Gallery.class).getFirst().getId();
     }
 }

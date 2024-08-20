@@ -15,6 +15,8 @@ public class Movie extends BaseSchema {
         this.category = Category.MOVIE;
     }
 
+    private Long movieId;
+
     private Boolean adult;
 
     private String originalTitle;

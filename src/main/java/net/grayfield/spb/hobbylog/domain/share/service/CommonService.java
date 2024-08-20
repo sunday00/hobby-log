@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -19,7 +20,12 @@ public class CommonService {
 
     public Result updateStatus(UpdateStatusInput updateStatusInput) {
         try {
-            this.hobbyTemplateRepository.updateStatus(updateStatusInput.getCategory(), updateStatusInput.getId(), updateStatusInput.getStatus());
+            BaseSchema result = this.hobbyTemplateRepository.updateStatus(updateStatusInput.getCategory(), updateStatusInput.getId(), updateStatusInput.getStatus());
+
+            if (result == null) {
+                throw new NoSuchElementException();
+            }
+
             return Result.builder().id(updateStatusInput.getId()).success(true).build();
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);

@@ -1,11 +1,13 @@
 package net.grayfield.spb.hobbylog.domain.movie.service;
 
+import com.mongodb.client.result.UpdateResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieRepository;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
+import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
@@ -98,7 +100,7 @@ public class MovieService {
     }
 
     public Result store(
-            Long id,
+            Long movieId,
             MovieRawDetail koDetailRaw, MovieRawDetail enDetailRaw, MovieRawCredit creditRaw, MovieRawKeyword keywordRaw,
             String content, Integer ratings
     ) {
@@ -110,7 +112,7 @@ public class MovieService {
             List<String> productions = enDetailRaw.getProductionCompaniesName();
 
             Movie movie = new Movie();
-            movie.setId(id);
+            movie.setMovieId(movieId);
 
             String localPosterImage = this.imageService.storeFromUrl(
                     "https://image.tmdb.org/t/p/w200"
@@ -145,13 +147,13 @@ public class MovieService {
             movie.setOriginalTagline(enDetailRaw.getTagline());
             movie.setStatus(Status.DRAFT);
 
-            this.movieTemplateRepository.upsertMovie(movie);
+            String resultId = this.movieTemplateRepository.upsertMovie(movie);
 
-            return Result.builder().id(id).success(true).build();
+            return Result.builder().id(resultId).success(true).build();
         } catch (Exception ex) {
             log.error(ex.getMessage());
             log.error(Arrays.toString(ex.getStackTrace()));
-            return Result.builder().id(0L).success(false).build();
+            return Result.builder().id(null).success(false).build();
         }
     }
 
@@ -176,5 +178,11 @@ public class MovieService {
                 .header("Authorization", "Bearer " + tmdbApiToken)
                 .retrieve()
             ;
+    }
+
+    public Movie getOneMovie(String id) {
+        String userid = StaticHelper.getUserId();
+
+        return this.movieRepository.findMovieByIdAndUserId(id, userid).orElseThrow();
     }
 }

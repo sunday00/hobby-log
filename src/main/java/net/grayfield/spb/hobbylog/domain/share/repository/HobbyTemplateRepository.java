@@ -26,7 +26,7 @@ import java.util.List;
 public class HobbyTemplateRepository {
     private final MongoTemplate mongoTemplate;
 
-    public BaseSchema updateStatus (Category category, Long id, Status status) {
+    public BaseSchema updateStatus (Category category, String id, Status status) {
         Query query = new Query(Criteria.where("id").is(id));
         Update update = new Update();
         update.set("status", status);
@@ -59,7 +59,7 @@ public class HobbyTemplateRepository {
             so, I decided to show logged hobby during two month.
         */
         LocalDateTime startD = baseD.minusMonths(1);
-        LocalDateTime endD = startD.plusMonths(1);
+        LocalDateTime endD = baseD.plusMonths(1);
 
         Criteria criteria = new Criteria()
                 .andOperator(

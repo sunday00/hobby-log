@@ -1,18 +1,16 @@
 package net.grayfield.spb.hobbylog.domain.movie.repository;
 
-import com.mongodb.client.result.UpdateResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.internal.helper.WordUtils;
 import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
+import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
-import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,15 +25,15 @@ import java.util.Arrays;
 public class MovieTemplateRepository {
     private final MongoTemplate mongoTemplate;
 
-    public UpdateResult upsertMovie(final Movie movie) {
-        UserAuthentication authentication = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getId();
+    public String upsertMovie(final Movie movie) {
+        String userId = StaticHelper.getUserId();
 
-        Query query = new Query(Criteria.where("id").is(movie.getId()));
+        Query query = new Query(
+                Criteria.where("movieId").is(movie.getMovieId())
+                        .and("userId").is(userId)
+        );
         Update update = new Update();
 
-        update.set("id", movie.getId());
-        update.set("userId", userId);
         update.set("category", Category.MOVIE);
         update.set("title", movie.getTitle());
         update.set("thumbnail", movie.getThumbnail());
@@ -45,6 +43,8 @@ public class MovieTemplateRepository {
 
         Arrays.stream(Movie.class.getDeclaredFields()).toList().forEach(f -> {
             try {
+                if(f.getName().equals("id")) return;
+
                 String methodName = "get" + WordUtils.capitalize(f.getName());
                 Method method = Movie.class.getMethod(methodName);
                 update.set(f.getName(), method.invoke(movie));
@@ -53,6 +53,8 @@ public class MovieTemplateRepository {
             }
         });
 
-        return mongoTemplate.upsert(query, update, Movie.class);
+        mongoTemplate.upsert(query, update, Movie.class);
+
+        return mongoTemplate.find(query, Movie.class).getFirst().getId();
     }
 }

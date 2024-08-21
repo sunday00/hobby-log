@@ -8,6 +8,7 @@ import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
@@ -25,5 +26,11 @@ public class GalleryController {
         Gallery gallery = this.galleryService.storeGallery(galleryInput, thumbnail);
 
         return Result.builder().id(gallery.getId()).success(true).build();
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @QueryMapping
+    public Gallery getOneGallery (@Argument String id) {
+        return this.galleryService.getOneGalleryById(id);
     }
 }

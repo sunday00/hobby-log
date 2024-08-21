@@ -1,3 +1,7 @@
+extend type Query {
+    getOneGallery(id: String): Gallery
+}
+
 enum GalleryType {
     SOLO
     ORGANIZATION

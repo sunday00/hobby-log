@@ -59,4 +59,17 @@ public class MovieController {
     ) {
         return this.movieService.getOneMovie(id);
     }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @MutationMapping
+    public Result updateMovie (
+            @Argument MovieUpdate movieUpdate,
+            GraphQLContext context, DataFetchingEnvironment e
+    ) {
+        Movie movie = this.movieService.updateOneMovie(movieUpdate);
+
+        this.movieService.storeRemote(movie.getMovieId(), movieUpdate.getRatings());
+
+        return Result.builder().id(movieUpdate.getId()).success(true).build();
+    }
 }

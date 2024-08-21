@@ -44,4 +44,14 @@ public class CommonService {
             return List.of();
         }
     }
+
+    public List<BaseSchema> findNonActiveByMonth(String yyyy, String mm) {
+        try {
+            return this.hobbyTemplateRepository.findNonActiveByMonth(yyyy, mm);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            log.error("{}", Arrays.stream(ex.getStackTrace()).toList());
+            return List.of();
+        }
+    }
 }

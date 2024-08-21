@@ -82,4 +82,31 @@ public class HobbyTemplateRepository {
 
         return results.getMappedResults();
     }
+
+    public List<BaseSchema> findNonActiveByMonth(String yyyy, String mm) {
+        String userId = StaticHelper.getUserId();
+
+        LocalDateTime startD = LocalDateTime.parse(yyyy + "-" + mm + "-01T00:00:00");
+        LocalDateTime endD = startD.plusMonths(1);
+
+        Criteria criteria = new Criteria()
+                .andOperator(
+                        Criteria.where("logAt").gte(startD),
+                        Criteria.where("logAt").lt(endD),
+                        Criteria.where("userId").is(userId),
+                        Criteria.where("status").ne(Status.ACTIVE)
+                );
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
+                UnionWithOperation.unionWith("movie"),
+                Aggregation.match(criteria)
+        );
+
+        AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
+
+        log.info("results: {}", results.getMappedResults());
+
+        return results.getMappedResults();
+    }
 }

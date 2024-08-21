@@ -18,6 +18,7 @@ import org.springframework.web.client.RestClient;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -189,5 +190,16 @@ public class MovieService {
         String userid = StaticHelper.getUserId();
 
         return this.movieRepository.findMovieByIdAndUserId(id, userid).orElseThrow();
+    }
+
+    public Movie updateOneMovie(MovieUpdate movieUpdate) {
+        Movie movie = this.getOneMovie(movieUpdate.getId());
+
+        movie.setContents(movieUpdate.getContent());
+        movie.setRatings(movieUpdate.getRatings());
+
+        this.movieRepository.save(movie);
+
+        return movie;
     }
 }

@@ -33,4 +33,10 @@ public class CommonController {
     public List<BaseSchema> monthHobby (@Argument String yyyy, @Argument String mm) {
         return this.commonService.findByMonth(yyyy, mm);
     }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @QueryMapping
+    public List<BaseSchema> monthNonActiveHobby (@Argument String yyyy, @Argument String mm) {
+        return this.commonService.findNonActiveByMonth(yyyy, mm);
+    }
 }

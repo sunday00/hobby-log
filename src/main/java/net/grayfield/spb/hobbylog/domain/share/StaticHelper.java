@@ -15,6 +15,11 @@ public class StaticHelper {
         return authentication.getId();
     }
 
+    public static String getUserEmail () {
+        UserAuthentication authentication = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getUserEmail();
+    }
+
     public static void logMap(Map raw) {
         try {
             ObjectMapper mapper = new ObjectMapper();

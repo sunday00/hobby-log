@@ -54,4 +54,8 @@ public class UserAuthentication implements Authentication {
     public String getId() {
         return this.user.getId();
     }
+
+    public String getUserEmail() {
+        return this.user.getEmail();
+    }
 }

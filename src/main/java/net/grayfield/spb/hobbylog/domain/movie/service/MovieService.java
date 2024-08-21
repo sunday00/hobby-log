@@ -29,6 +29,9 @@ public class MovieService {
     @Value("${tmdb.api_token}")
     private String tmdbApiToken;
 
+    @Value("${tmdb.user_email}")
+    private String tmdbUserEmail;
+
     private final ImageService imageService;
     private final RestClient movieBaseClient;
     private final MovieRepository movieRepository;
@@ -158,6 +161,8 @@ public class MovieService {
     }
 
     public void storeRemote(Long id, Integer ratings) {
+        if(!StaticHelper.getUserEmail().equals(this.tmdbUserEmail)) return;
+
         float rating = ratings.floatValue() / 10;
         float underOne = rating - (ratings / 10);
 

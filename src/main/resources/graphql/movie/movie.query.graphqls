@@ -1,5 +1,6 @@
 extend type Query {
     searchMovies(search: String, page: Long = 1): MovieRawPge
+    getOneMovie(id: String): Movie
 }
 
 type MovieRawPge {
@@ -26,3 +27,62 @@ type MovieRaw {
     voteCount: Long
 }
 
+type Movie implements BaseSchema {
+    id: String
+    userId: String
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
+    status: Status
+    adult: Boolean
+    originalTitle: String
+    budget: Long
+    revenue: Long
+    originalCountry: [String]
+    language: String
+    directors: [Crew]
+    actors: [Casting]
+    genres: [String]
+    keywords: [String]
+    synopsis: String
+    originalSynopsis: String
+    contents: String
+    popularity: Float
+    voteAverage: Float
+    voteCount: Long
+    productions: [String]
+    releaseDate: String
+    runtime: Int
+    tagline: String
+    originalTagline: String
+}
+
+type Crew {
+    id: Long
+    adult: Boolean
+    gender: Int
+    name: String
+    originalName: String
+    popularity: Float
+    profilePath: String
+    creditId: String
+    department: String
+    job: String
+}
+
+type Casting {
+    id: Long
+    adult: Boolean
+    gender: Int
+    department: String
+    name: String
+    originalName: String
+    popularity: Float
+    profilePath: String
+    castId: Long
+    character: String
+    creditId: String
+    order: Int
+}

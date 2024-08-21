@@ -22,21 +22,21 @@ public class MovieController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
     public Result logMovie (
-            @Argument Long id, @Argument String content, @Argument Integer ratings,
+            @Argument Long movieId, @Argument String content, @Argument Integer ratings,
             GraphQLContext context, DataFetchingEnvironment e
     ) {
-        MovieRawDetail koDetailRaw = this.movieService.getMovieDetail(id, "ko-KR");
-        MovieRawDetail enDetailRaw = this.movieService.getMovieDetail(id, "en-US");
+        MovieRawDetail koDetailRaw = this.movieService.getMovieDetail(movieId, "ko-KR");
+        MovieRawDetail enDetailRaw = this.movieService.getMovieDetail(movieId, "en-US");
 
-        MovieRawCredit creditRaw = this.movieService.getMovieCredits(id, "ko-KR");
-        MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(id);
+        MovieRawCredit creditRaw = this.movieService.getMovieCredits(movieId, "ko-KR");
+        MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(movieId);
 
-        this.movieService.storeRemote(id, ratings);
+        this.movieService.storeRemote(movieId, ratings);
 
         //TODO: add review remote TMDB
 
         return this.movieService.store(
-                id,
+                movieId,
                 koDetailRaw, enDetailRaw, creditRaw, keywordRaw,
                 content, ratings
         );
@@ -44,9 +44,19 @@ public class MovieController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @QueryMapping
-    public MovieRawPage searchMovies (@Argument String search, @Argument Long page, DataFetchingEnvironment e) {
+    public MovieRawPage searchMovies (
+            @Argument String search, @Argument Long page,
+            DataFetchingEnvironment e
+    ) {
         return this.movieService.searchMovieFromTMDB(search, page);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @QueryMapping
+    public Movie getOneMovie(
+            @Argument String id,
+            GraphQLContext context, DataFetchingEnvironment e
+    ) {
+        return this.movieService.getOneMovie(id);
+    }
 }

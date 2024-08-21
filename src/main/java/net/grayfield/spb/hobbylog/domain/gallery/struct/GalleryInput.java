@@ -6,7 +6,7 @@ import org.springframework.lang.Nullable;
 @Data
 public class GalleryInput {
     @Nullable
-    private Long id;
+    private String id;
 
     private String title;
     private GalleryType galleryType;

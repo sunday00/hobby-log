@@ -41,14 +41,10 @@ public class GalleryService {
         gallery.setRatings(galleryInput.getRatings());
         gallery.setLogAt(localDateTime);
 
-        Long updateResultId = this.galleryTemplateRepository.upsertGallery(gallery);
+        String updateResultId = this.galleryTemplateRepository.upsertGallery(gallery);
 
         gallery.setId(updateResultId);
 
         return gallery;
     }
-
-
-
-
 }

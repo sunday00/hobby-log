@@ -17,7 +17,7 @@ enum Status {
 }
 
 interface BaseSchema {
-    id: Long
+    id: String
     userId: String
     category: Category
     title: String
@@ -28,12 +28,12 @@ interface BaseSchema {
 }
 
 type Result {
-    id: Long
+    id: String
     success: Boolean
 }
 
 type Hobby implements BaseSchema {
-    id: Long
+    id: String
     userId: String
     category: Category
     title: String

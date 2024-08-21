@@ -7,7 +7,7 @@ enum GalleryType {
 }
 
 type Gallery implements BaseSchema {
-    id: Long
+    id: String
     userId: String
     title: String
     category: Category

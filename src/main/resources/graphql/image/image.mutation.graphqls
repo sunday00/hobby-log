@@ -4,7 +4,7 @@ extend type Mutation {
 
 input AddSubImageInput {
     category: Category,
-    id: Long,
+    id: String,
     url: String,
     serial: Int
 }

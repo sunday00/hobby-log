@@ -7,6 +7,7 @@ import net.grayfield.spb.hobbylog.domain.gallery.repository.GalleryTemplateRepos
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
+import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +47,11 @@ public class GalleryService {
         gallery.setId(updateResultId);
 
         return gallery;
+    }
+
+    public Gallery getOneGalleryById(String id) {
+        String userid = StaticHelper.getUserId();
+
+        return this.galleryRepository.findGalleryByIdAndUserId(id, userid).orElseThrow();
     }
 }

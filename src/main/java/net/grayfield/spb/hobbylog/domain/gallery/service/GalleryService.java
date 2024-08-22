@@ -9,6 +9,7 @@ import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,8 +32,6 @@ public class GalleryService {
 
         Gallery gallery = new Gallery();
 
-        if(galleryInput.getId() != null) { gallery.setId(galleryInput.getId()); }
-
         gallery.setTitle(galleryInput.getTitle());
         gallery.setGalleryType(galleryInput.getGalleryType());
         gallery.setLocation(galleryInput.getLocation());
@@ -53,5 +52,21 @@ public class GalleryService {
         String userid = StaticHelper.getUserId();
 
         return this.galleryRepository.findGalleryByIdAndUserId(id, userid).orElseThrow();
+    }
+
+    public Gallery updateOneGallery(GalleryInput galleryInput, String thumbnail) {
+        Gallery gallery = this.getOneGalleryById(galleryInput.getId());
+
+        gallery.setTitle(galleryInput.getTitle());
+        gallery.setThumbnail(thumbnail);
+        gallery.setRatings(galleryInput.getRatings());
+        gallery.setGalleryType(galleryInput.getGalleryType());
+        gallery.setLocation(galleryInput.getLocation());
+        gallery.setOverview(galleryInput.getOverview());
+        gallery.setContent(galleryInput.getContent());
+
+        this.galleryRepository.save(gallery);
+
+        return gallery;
     }
 }

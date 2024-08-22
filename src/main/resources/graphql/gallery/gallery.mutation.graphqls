@@ -1,5 +1,6 @@
 extend type Mutation {
     createGalleryLog(galleryInput: GalleryInput): Result
+    updateGalleryLog(galleryInput: GalleryInput): Result
 }
 
 input GalleryInput {

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.share.repository.HobbyTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import net.grayfield.spb.hobbylog.domain.share.struct.UpdateStatusInput;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,23 @@ public class CommonService {
             log.error(ex.getMessage(), ex);
             log.error("{}", Arrays.stream(ex.getStackTrace()).toList());
             return List.of();
+        }
+    }
+
+    public Result deleteOneLog(Category category, String id) {
+        try {
+            BaseSchema result = this.hobbyTemplateRepository.deleteOneHobby(category, id);
+
+            if (result == null) {
+                throw new NoSuchElementException();
+            }
+
+            return Result.builder().id(id).success(true).build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            log.error("{}", ex.getCause());
+            log.error("{}", Arrays.stream(ex.getStackTrace()).toList());
+            return Result.builder().id(id).success(false).build();
         }
     }
 }

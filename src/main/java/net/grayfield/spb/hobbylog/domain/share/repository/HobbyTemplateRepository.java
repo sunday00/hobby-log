@@ -27,7 +27,11 @@ public class HobbyTemplateRepository {
     private final MongoTemplate mongoTemplate;
 
     public BaseSchema updateStatus (Category category, String id, Status status) {
-        Query query = new Query(Criteria.where("id").is(id));
+        String userId = StaticHelper.getUserId();
+
+        Query query = new Query(
+                Criteria.where("id").is(id).and("userId").is(userId)
+        );
         Update update = new Update();
         update.set("status", status);
 
@@ -108,5 +112,26 @@ public class HobbyTemplateRepository {
         log.info("results: {}", results.getMappedResults());
 
         return results.getMappedResults();
+    }
+
+    public BaseSchema deleteOneHobby(Category category, String id) {
+        String userId = StaticHelper.getUserId();
+
+        Query query = new Query(
+                Criteria.where("id").is(id).and("userId").is(userId)
+        );
+        switch (category) {
+            case MOVIE -> {
+                return this.mongoTemplate.findAndRemove(query, Movie.class);
+            }
+
+            case GALLERY -> {
+                return this.mongoTemplate.findAndRemove(query, Gallery.class);
+            }
+
+            default -> {
+                return null;
+            }
+        }
     }
 }

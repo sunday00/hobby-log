@@ -32,13 +32,6 @@ public class GalleryTemplateRepository {
         );
         Update update = new Update();
 
-        if(gallery.getId() != null) {
-            query = new Query(
-                    Criteria.where("id").is(gallery.getId())
-                            .and("userId").is(userId)
-            );
-        }
-
         update.set("category", Category.GALLERY);
         update.set("title", gallery.getTitle());
         update.set("thumbnail", gallery.getThumbnail());

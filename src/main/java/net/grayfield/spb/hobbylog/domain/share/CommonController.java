@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.share.service.CommonService;
 import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
+import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import net.grayfield.spb.hobbylog.domain.share.struct.UpdateStatusInput;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -32,5 +33,17 @@ public class CommonController {
     @QueryMapping
     public List<BaseSchema> monthHobby (@Argument String yyyy, @Argument String mm) {
         return this.commonService.findByMonth(yyyy, mm);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @QueryMapping
+    public List<BaseSchema> monthNonActiveHobby (@Argument String yyyy, @Argument String mm) {
+        return this.commonService.findNonActiveByMonth(yyyy, mm);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @MutationMapping
+    public Result deleteLog(@Argument Category category, @Argument String id) {
+        return this.commonService.deleteOneLog(category, id);
     }
 }

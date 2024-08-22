@@ -1,4 +1,10 @@
 extend type Mutation {
     logMovie(movieId: Long, content: String, ratings: Int): Result
+    updateMovie(movieUpdate: MovieUpdate): Result
 }
 
+input MovieUpdate {
+    id: String,
+    content: String,
+    ratings: Int
+}

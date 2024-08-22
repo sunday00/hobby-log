@@ -33,4 +33,14 @@ public class GalleryController {
     public Gallery getOneGallery (@Argument String id) {
         return this.galleryService.getOneGalleryById(id);
     }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @MutationMapping
+    public Result updateGalleryLog (@Argument GalleryInput galleryInput) {
+        String thumbnail = this.galleryService.storeThumbnail(galleryInput);
+
+        Gallery gallery = this.galleryService.updateOneGallery(galleryInput, thumbnail);
+
+        return Result.builder().id(gallery.getId()).success(true).build();
+    }
 }

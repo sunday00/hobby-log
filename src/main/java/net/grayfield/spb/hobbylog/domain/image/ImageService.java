@@ -9,12 +9,14 @@ import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.time.LocalDate;
@@ -26,7 +28,9 @@ import java.util.Base64;
 @Service
 @RequiredArgsConstructor
 public class ImageService {
-    private final String CLASS_PATH;
+    private String classPath() throws FileNotFoundException {
+        return ResourceUtils.getFile("classpath:static").toString();
+    }
 
     public String storeFromUrl (String url) {
         String fullFilePath = "";
@@ -38,7 +42,7 @@ public class ImageService {
             String newFileName = this.generateNewName();
             fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
-            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
         } catch (Exception ex)  {
             log.error(ex.getMessage());
         }
@@ -56,7 +60,7 @@ public class ImageService {
             String newFileName = this.generateMovieImageName(movie);
             fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
-            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
         } catch (Exception ex)  {
             log.error(ex.getMessage());
         }
@@ -77,7 +81,7 @@ public class ImageService {
             String newFileName = this.generateCategoryImageName(category, localDateTime);
             fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
-            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
         } catch (Exception ex)  {
             log.error(ex.getMessage());
         }
@@ -102,7 +106,7 @@ public class ImageService {
 
             fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
-            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }
@@ -124,7 +128,7 @@ public class ImageService {
 
             fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
-            ImageIO.write(image, "jpg", new File(CLASS_PATH + fullFilePath));
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
         } catch (Exception ex)  {
             log.error(ex.getMessage());
         }
@@ -150,14 +154,14 @@ public class ImageService {
         return outputImage;
     }
 
-    public String makeFolder (boolean withDateFolder) {
+    public String makeFolder (boolean withDateFolder) throws FileNotFoundException {
         String folderPath = "/images/upload/" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM"));
 
         if(withDateFolder)  {
             folderPath = folderPath + FileSystems.getDefault().getSeparator() +  LocalDate.now().format(DateTimeFormatter.ofPattern("dd"));
         }
 
-        File uploadPathFolder = new File(CLASS_PATH + folderPath);
+        File uploadPathFolder = new File(classPath() + folderPath);
 
         if(!uploadPathFolder.exists()) {
             uploadPathFolder.mkdirs();

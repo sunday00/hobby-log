@@ -2,8 +2,10 @@
 ```shell
 ./deploy.sh
   build
+  mv build... to app.jar
   rsync
   
+  kakao redirect
 ```
 
 ## Build

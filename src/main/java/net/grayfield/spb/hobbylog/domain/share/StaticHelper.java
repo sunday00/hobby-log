@@ -3,8 +3,11 @@ package net.grayfield.spb.hobbylog.domain.share;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -29,6 +32,13 @@ public class StaticHelper {
             log.error("{}", e.getCause().toString());
             log.error("{}", Arrays.toString(e.getStackTrace()));
         }
+    }
 
+    public static LocalDateTime generateLogAt(@Nullable String logAtString) {
+        if (logAtString == null) {
+            return LocalDateTime.now(ZoneOffset.UTC);
+        }
+
+        return LocalDateTime.parse(logAtString);
     }
 }

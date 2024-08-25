@@ -7,6 +7,7 @@ import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -89,6 +90,31 @@ public class ImageService {
         return fullFilePath;
     }
 
+    public String storeFromBase64 (Category category, String base64Str, LocalDateTime localDateTime) {
+        String fullFilePath = "";
+
+        try {
+            String[] sourceArr = base64Str.split(",");
+
+            byte[] decoded = Base64.getDecoder().decode(sourceArr[1]);
+            ByteArrayInputStream bis = new ByteArrayInputStream(decoded);
+            BufferedImage image = ImageIO.read(bis);
+            bis.close();
+
+            image = this.resizeImage(image);
+            String folder = this.makeFolder(false);
+            String newFileName = this.generateCategoryImageName(category, localDateTime);
+
+            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
+
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
+    }
+
     public String storeFromBase64(Category category, String id, String base64Str, int serial) {
         String fullFilePath = "";
 
@@ -112,6 +138,21 @@ public class ImageService {
         }
 
         return fullFilePath;
+    }
+
+    public String storeWithDefault(Category category, String url, @Nullable String logAtString) {
+        if(url == null || url.isEmpty()) {
+            return "";
+        }
+
+        LocalDateTime realLog = StaticHelper.generateLogAt(logAtString);
+
+        boolean isBase64 = url.startsWith("data:image/");
+        if (isBase64) {
+            return this.storeFromBase64(category, url, realLog);
+        } else {
+            return this.storeFromUrl(category, url, realLog);
+        }
     }
 
     public String storeFromRemoteUrlSub(Category category, String id, String url, int serial) {

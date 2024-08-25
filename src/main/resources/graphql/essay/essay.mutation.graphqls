@@ -1,0 +1,13 @@
+extend type Mutation {
+    createEssayLog(essayInput: EssayInput): Result
+}
+
+input EssayInput {
+    id: String
+    title: String
+    content: String!
+    writingType: WritingType!
+    seriesName: String
+    thumbnail: String
+    logAtString: String
+}

@@ -25,7 +25,8 @@ public class EssayService {
         essay.setUserId(userId);
         essay.setCategory(Category.ESSAY);
         essay.setTitle(essayInput.getTitle());
-        essay.setThumbnail(imageService.storeWithDefault(Category.ESSAY, essayInput.getThumbnail(), essayInput.getLogAtString()));
+//        essay.setThumbnail(imageService.storeWithDefault(Category.ESSAY, essayInput.getThumbnail(), essayInput.getLogAtString()));
+        essay.setThumbnail("temporary");
         essay.setRatings(0);
         essay.setStatus(Status.DRAFT);
         essay.setTitle(essayInput.getTitle());

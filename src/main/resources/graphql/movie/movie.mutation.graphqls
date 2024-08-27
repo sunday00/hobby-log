@@ -1,10 +1,15 @@
 extend type Mutation {
-    logMovie(movieId: Long, content: String, ratings: Int): Result
-    updateMovie(movieUpdate: MovieUpdate): Result
+    logMovie(movieInput: MovieInput): Result
+    updateMovie(movieInput: MovieInput): Result
 }
 
-input MovieUpdate {
+input MovieInput {
     id: String,
-    content: String,
-    ratings: Int
+    movieId: Long!,
+    content: String!,
+    ratings: Int!,
+    logAtStr: String
 }
+
+# todo
+# log movie with logAtString

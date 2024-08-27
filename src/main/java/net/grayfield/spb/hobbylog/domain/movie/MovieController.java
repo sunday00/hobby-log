@@ -22,23 +22,22 @@ public class MovieController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
     public Result logMovie (
-            @Argument Long movieId, @Argument String content, @Argument Integer ratings,
+            @Argument MovieInput movieInput,
             GraphQLContext context, DataFetchingEnvironment e
     ) {
-        MovieRawDetail koDetailRaw = this.movieService.getMovieDetail(movieId, "ko-KR");
-        MovieRawDetail enDetailRaw = this.movieService.getMovieDetail(movieId, "en-US");
+        MovieRawDetail koDetailRaw = this.movieService.getMovieDetail(movieInput.getMovieId(), "ko-KR");
+        MovieRawDetail enDetailRaw = this.movieService.getMovieDetail(movieInput.getMovieId(), "en-US");
 
-        MovieRawCredit creditRaw = this.movieService.getMovieCredits(movieId, "ko-KR");
-        MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(movieId);
+        MovieRawCredit creditRaw = this.movieService.getMovieCredits(movieInput.getMovieId(), "ko-KR");
+        MovieRawKeyword keywordRaw = this.movieService.getMovieKeywords(movieInput.getMovieId());
 
-        this.movieService.storeRemote(movieId, ratings);
+        this.movieService.storeRemote(movieInput.getMovieId(), movieInput.getRatings());
 
         //TODO: add review remote TMDB
 
         return this.movieService.store(
-                movieId,
-                koDetailRaw, enDetailRaw, creditRaw, keywordRaw,
-                content, ratings
+                movieInput,
+                koDetailRaw, enDetailRaw, creditRaw, keywordRaw
         );
     }
 
@@ -63,13 +62,13 @@ public class MovieController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
     public Result updateMovie (
-            @Argument MovieUpdate movieUpdate,
+            @Argument MovieInput movieInput,
             GraphQLContext context, DataFetchingEnvironment e
     ) {
-        Movie movie = this.movieService.updateOneMovie(movieUpdate);
+        Movie movie = this.movieService.updateOneMovie(movieInput);
 
-        this.movieService.storeRemote(movie.getMovieId(), movieUpdate.getRatings());
+        this.movieService.storeRemote(movie.getMovieId(), movie.getRatings());
 
-        return Result.builder().id(movieUpdate.getId()).success(true).build();
+        return Result.builder().id(movie.getId()).success(true).build();
     }
 }

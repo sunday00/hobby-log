@@ -17,19 +17,19 @@ public class ImageController {
     @MutationMapping
     public Result addSubImage(@Argument AddSubImageInput addSubImageInput)  {
         if( addSubImageInput.getUrl().startsWith("data:image/") ) {
-            this.imageService.storeFromBase64(
-                    addSubImageInput.getCategory(),
-                    addSubImageInput.getId(),
-                    addSubImageInput.getUrl(),
-                    addSubImageInput.getSerial()
-            );
+//            this.imageService.storeFromBase64(
+//                    addSubImageInput.getCategory(),
+//                    addSubImageInput.getId(),
+//                    addSubImageInput.getUrl(),
+//                    addSubImageInput.getSerial()
+//            );
         } else {
-            this.imageService.storeFromRemoteUrlSub(
-                    addSubImageInput.getCategory(),
-                    addSubImageInput.getId(),
-                    addSubImageInput.getUrl(),
-                    addSubImageInput.getSerial()
-            );
+//            this.imageService.storeFromRemoteUrlSub(
+//                    addSubImageInput.getCategory(),
+//                    addSubImageInput.getId(),
+//                    addSubImageInput.getUrl(),
+//                    addSubImageInput.getSerial()
+//            );
         }
 
         return Result.builder().id(addSubImageInput.getId()).success(true).build();

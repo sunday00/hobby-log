@@ -6,6 +6,7 @@ import net.grayfield.spb.hobbylog.domain.gallery.repository.GalleryRepository;
 import net.grayfield.spb.hobbylog.domain.gallery.repository.GalleryTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
+import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
@@ -20,11 +21,13 @@ import java.time.LocalDateTime;
 public class GalleryService {
     private final GalleryRepository galleryRepository;
     private final GalleryTemplateRepository galleryTemplateRepository;
+    private final FileSystemService fileSystemService;
     private final ImageService imageService;
 
     public String storeThumbnail(GalleryInput galleryInput) {
-        LocalDateTime localDateTime = galleryInput.getLogAt() != null ? LocalDateTime.parse(galleryInput.getLogAt()) : LocalDateTime.now();
-        return this.imageService.storeFromUrl(Category.GALLERY, galleryInput.getThumbnail(), localDateTime);
+//        String folder = this.fileSystemService.makeCategoryMainImage(Category.GALLERY, galleryInput.getLogAt());
+//        return this.imageService.storeMainImage(Category.GALLERY, folder, galleryInput.getThumbnail(), galleryInput.getLogAt());
+        return "";
     }
 
     public Gallery storeGallery(GalleryInput galleryInput, String thumbnail) {

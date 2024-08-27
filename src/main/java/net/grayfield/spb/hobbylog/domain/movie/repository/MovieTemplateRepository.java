@@ -31,14 +31,23 @@ public class MovieTemplateRepository {
         Query query = new Query(
                 Criteria.where("movieId").is(movie.getMovieId())
                         .and("userId").is(userId)
+                        .and("logAt").is(movie.getLogAt())
         );
+
+        if (movie.getId() != null) {
+            query = new Query(
+                    Criteria.where("id").is(movie.getId())
+                            .and("userId").is(userId)
+            );
+        }
+
         Update update = new Update();
 
         update.set("category", Category.MOVIE);
         update.set("title", movie.getTitle());
         update.set("thumbnail", movie.getThumbnail());
         update.set("ratings", movie.getRatings());
-        update.set("logAt", LocalDateTime.now(ZoneOffset.UTC));
+        update.set("logAt", movie.getLogAt());
         update.set("status", Status.DRAFT);
 
         Arrays.stream(Movie.class.getDeclaredFields()).toList().forEach(f -> {

@@ -6,6 +6,7 @@ import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -34,11 +35,13 @@ public class StaticHelper {
         }
     }
 
-    public static LocalDateTime generateLogAt(@Nullable String logAtString) {
-        if (logAtString == null) {
+    public static LocalDateTime generateLogAt(@Nullable String logAtStr) {
+        if (logAtStr == null) {
             return LocalDateTime.now(ZoneOffset.UTC);
         }
 
-        return LocalDateTime.parse(logAtString);
+        return Instant.parse(logAtStr)
+                .atOffset(ZoneOffset.UTC)
+                .toLocalDateTime();
     }
 }

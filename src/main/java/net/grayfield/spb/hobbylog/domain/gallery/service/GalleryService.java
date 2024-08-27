@@ -10,13 +10,10 @@ import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
-import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
@@ -29,16 +26,12 @@ public class GalleryService {
     private final ImageService imageService;
 
     public String storeThumbnail(GalleryInput galleryInput, LocalDateTime logAt) throws FileNotFoundException {
-        String folder = this.fileSystemService.makeCategoryMainImageFolder(Category.GALLERY, logAt);
+        String folder = this.fileSystemService.makeCategoryImageFolder(Category.GALLERY, logAt);
         return this.imageService.storeMainImage(Category.GALLERY, folder, galleryInput.getThumbnail(), logAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH")));
     }
 
     public Gallery storeGallery(GalleryInput galleryInput) throws FileNotFoundException {
-        LocalDateTime logAt = galleryInput.getLogAtStr() != null
-                ? Instant.parse(galleryInput.getLogAtStr())
-                .atOffset(ZoneOffset.UTC)
-                .toLocalDateTime()
-                : LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime logAt = StaticHelper.generateLogAt(galleryInput.getLogAtStr());
         String thumbnail = this.storeThumbnail(galleryInput, logAt);
 
         Gallery gallery = new Gallery();
@@ -67,11 +60,7 @@ public class GalleryService {
     public Gallery updateOneGallery(GalleryInput galleryInput) throws FileNotFoundException {
         Gallery gallery = this.getOneGalleryById(galleryInput.getId());
 
-        LocalDateTime logAt = galleryInput.getLogAtStr() != null
-                ? Instant.parse(galleryInput.getLogAtStr())
-                .atOffset(ZoneOffset.UTC)
-                .toLocalDateTime()
-                : LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime logAt = StaticHelper.generateLogAt(galleryInput.getLogAtStr());
         String thumbnail = this.storeThumbnail(galleryInput, logAt);
 
         gallery.setTitle(galleryInput.getTitle());

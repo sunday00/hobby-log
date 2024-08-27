@@ -56,7 +56,7 @@ public class FileSystemService {
         return folderPath;
     }
 
-    public String makeCategoryMainImageFolder (Category category, LocalDateTime logAt) throws FileNotFoundException {
+    public String makeCategoryImageFolder (Category category, LocalDateTime logAt) throws FileNotFoundException {
         String folderPath = "/images/upload/" + category.toString().toLowerCase() + FileSystems.getDefault().getSeparator();
 
         folderPath += logAt.format(DateTimeFormatter.ofPattern("yyyy/MM/"));

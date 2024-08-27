@@ -1,6 +1,5 @@
 package net.grayfield.spb.hobbylog.domain.movie.service;
 
-import com.mongodb.client.result.UpdateResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
@@ -13,7 +12,6 @@ import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -23,7 +21,6 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -163,7 +160,7 @@ public class MovieService {
             movie.setTagline(koDetailRaw.getTagline());
             movie.setOriginalTagline(enDetailRaw.getTagline());
             movie.setStatus(Status.DRAFT);
-            movie.setLogAt(movieInput.getLogAtStr() != null ? Instant.parse(movieInput.getLogAtStr()).atOffset(ZoneOffset.UTC).toLocalDateTime() : LocalDateTime.now(ZoneOffset.UTC));
+            movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
 
             String resultId = this.movieTemplateRepository.upsertMovie(movie);
 
@@ -211,7 +208,7 @@ public class MovieService {
 
         movie.setContents(movieInput.getContent());
         movie.setRatings(movieInput.getRatings());
-        movie.setLogAt(LocalDateTime.parse(movieInput.getLogAtStr()));
+        movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
 
         this.movieRepository.save(movie);
 

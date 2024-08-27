@@ -10,5 +10,5 @@ public class EssayInput {
     private WritingType writingType;
     private String seriesName;
     private String thumbnail;
-    private String logAtString;
+    private String logAtStr;
 }

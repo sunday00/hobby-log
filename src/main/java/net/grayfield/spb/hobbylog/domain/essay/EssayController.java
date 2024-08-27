@@ -11,6 +11,8 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.Arrays;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -19,8 +21,15 @@ public class EssayController {
 
     @MutationMapping
     public Result createEssayLog(@Argument EssayInput essayInput) {
-        Essay essay = this.essayService.createEssay(essayInput);
+        try {
+            Essay essay = this.essayService.createEssay(essayInput);
 
-        return Result.builder().id(essay.getId()).success(true).build();
+            return Result.builder().id(essay.getId()).success(true).build();
+        }  catch (Exception ex) {
+            log.error(ex.getMessage());
+            log.error(Arrays.toString(ex.getStackTrace()));
+            return Result.builder().id(null).success(false).build();
+        }
+
     }
 }

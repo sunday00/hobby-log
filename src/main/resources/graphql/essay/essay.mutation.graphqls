@@ -9,5 +9,5 @@ input EssayInput {
     writingType: WritingType!
     seriesName: String
     thumbnail: String
-    logAtString: String
+    logAtStr: String
 }

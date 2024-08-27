@@ -9,12 +9,24 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.FileSystems;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
 public class FileSystemService {
     private String classPath() throws FileNotFoundException {
         return ResourceUtils.getFile("classpath:static").toString();
+    }
+
+    private void execMkdir(String folderPath) throws FileNotFoundException {
+        File uploadPathFolder = new File(classPath() + folderPath);
+
+        boolean result = true;
+        if(!uploadPathFolder.exists()) {
+            result = uploadPathFolder.mkdirs();
+        }
+
+        if(!result) throw new InternalError("Mkdir " + folderPath + " failed");
     }
 
     public String makeMovieFolder (Long movieId, String movieTitle) throws FileNotFoundException {
@@ -39,14 +51,17 @@ public class FileSystemService {
 
         folderPath += movieTitle.toLowerCase().charAt(0);
 
-        File uploadPathFolder = new File(classPath() + folderPath);
+        this.execMkdir(folderPath);
 
-        boolean result = true;
-        if(!uploadPathFolder.exists()) {
-            result = uploadPathFolder.mkdirs();
-        }
+        return folderPath;
+    }
 
-        if(!result) throw new InternalError("Mkdir " + folderPath + " failed");
+    public String makeCategoryMainImageFolder (Category category, LocalDateTime logAt) throws FileNotFoundException {
+        String folderPath = "/images/upload/" + category.toString().toLowerCase() + FileSystems.getDefault().getSeparator();
+
+        folderPath += logAt.format(DateTimeFormatter.ofPattern("yyyy/MM/"));
+
+        this.execMkdir(folderPath);
 
         return folderPath;
     }

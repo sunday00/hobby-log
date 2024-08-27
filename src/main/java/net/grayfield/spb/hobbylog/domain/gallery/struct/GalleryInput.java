@@ -17,5 +17,5 @@ public class GalleryInput {
     private int ratings;
 
     @Nullable
-    private String logAt;
+    private String logAtStr;
 }

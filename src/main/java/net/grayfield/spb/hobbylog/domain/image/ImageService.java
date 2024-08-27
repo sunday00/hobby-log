@@ -59,21 +59,17 @@ public class ImageService {
     public String storeMainImage (Category category, String folder, String urlLikeStr, String identifier) {
         String fullFilePath = "";
         boolean isBase64 = urlLikeStr.startsWith("data:image/");
-        LocalDateTime dt = category != Category.MOVIE ? LocalDateTime.parse(identifier) : LocalDateTime.now(ZoneOffset.UTC);
 
         try {
             switch (category) {
                 case MOVIE:
                     fullFilePath = this.storeMovieImage(identifier, folder, urlLikeStr);
                     break;
-                case GALLERY:
-//                    fullFilePath = this.storeFromUrl(Category.GALLERY, identifier, folder, urlLikeStr);
-                    break;
                 default:
                     if(isBase64){
 
                     } else {
-
+                        fullFilePath = this.storeCategoryMainImageFromUrl(identifier, folder, urlLikeStr);
                     }
             }
         } catch (Exception ex)  {
@@ -101,5 +97,22 @@ public class ImageService {
         return fullFilePath;
     }
 
+    public String storeCategoryMainImageFromUrl(String timeStr, String folder, String url) {
+        String fullFilePath = "";
 
+        try {
+            BufferedImage image = ImageIO.read(URI.create(url).toURL());
+
+            image = this.resizeImage(image);
+
+            String newFileName = StaticHelper.getUserId() + "-" + timeStr;
+            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
+
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
+    }
 }

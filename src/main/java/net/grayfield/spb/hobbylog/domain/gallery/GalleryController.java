@@ -12,6 +12,9 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -20,10 +23,8 @@ public class GalleryController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
-    public Result createGalleryLog (@Argument GalleryInput galleryInput) {
-        String thumbnail = this.galleryService.storeThumbnail(galleryInput);
-
-        Gallery gallery = this.galleryService.storeGallery(galleryInput, thumbnail);
+    public Result createGalleryLog (@Argument GalleryInput galleryInput) throws FileNotFoundException {
+        Gallery gallery = this.galleryService.storeGallery(galleryInput);
 
         return Result.builder().id(gallery.getId()).success(true).build();
     }
@@ -37,10 +38,15 @@ public class GalleryController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
     public Result updateGalleryLog (@Argument GalleryInput galleryInput) {
-        String thumbnail = this.galleryService.storeThumbnail(galleryInput);
+        try {
+            Gallery gallery = this.galleryService.updateOneGallery(galleryInput);
 
-        Gallery gallery = this.galleryService.updateOneGallery(galleryInput, thumbnail);
+            return Result.builder().id(gallery.getId()).success(true).build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            log.error(Arrays.toString(ex.getStackTrace()));
 
-        return Result.builder().id(gallery.getId()).success(true).build();
+            return Result.builder().id(null).success(false).build();
+        }
     }
 }

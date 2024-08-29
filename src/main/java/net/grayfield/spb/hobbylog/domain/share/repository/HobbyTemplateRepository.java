@@ -9,6 +9,7 @@ import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
+import net.grayfield.spb.hobbylog.domain.walk.struct.Walk;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -47,6 +48,10 @@ public class HobbyTemplateRepository {
 
             case ESSAY -> {
                 return this.mongoTemplate.findAndModify(query, update, Essay.class);
+            }
+
+            case WALK -> {
+                return this.mongoTemplate.findAndModify(query, update, Walk.class);
             }
 
             default -> {
@@ -138,6 +143,10 @@ public class HobbyTemplateRepository {
 
             case ESSAY -> {
                 return this.mongoTemplate.findAndRemove(query, Essay.class);
+            }
+
+            case WALK -> {
+                return this.mongoTemplate.findAndRemove(query, Walk.class);
             }
 
             default -> {

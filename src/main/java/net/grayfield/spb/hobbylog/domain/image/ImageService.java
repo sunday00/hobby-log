@@ -27,26 +27,26 @@ public class ImageService {
         return ResourceUtils.getFile("classpath:static").toString();
     }
 
-    public BufferedImage resizeImage(BufferedImage image) {
+    public BufferedImage resizeImage(BufferedImage image, int size) {
         int width = image.getWidth();
         int height = image.getHeight();
 
-        float ratio = (float) 200 / width;
+        float ratio = (float) size / width;
 
         height = (int) (height * ratio);
 
         BufferedImage outputImage =
-                new BufferedImage(200, height, image.getType());
+                new BufferedImage(size, height, image.getType());
 
         Graphics2D graphics2D = outputImage.createGraphics();
-        graphics2D.drawImage(image, 0, 0, 200, height, null);
+        graphics2D.drawImage(image, 0, 0, size, height, null);
         graphics2D.dispose();
 
         return outputImage;
     }
 
-    public String execStore(BufferedImage image, String folder, String identifier) throws IOException {
-        BufferedImage resizedImage = this.resizeImage(image);
+    public String execStore(BufferedImage image, String folder, String identifier, int size) throws IOException {
+        BufferedImage resizedImage = this.resizeImage(image, size);
         String newFileName = StaticHelper.getUserId() + "-" + identifier;
 
         String fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
@@ -65,9 +65,9 @@ public class ImageService {
                 fullFilePath = this.storeMovieImage(identifier, folder, urlLikeStr);
             } else {
                 if (isBase64) {
-                    fullFilePath = this.storeCategoryImageFromBase64(identifier, folder, urlLikeStr);
+                    fullFilePath = this.storeCategoryImageFromBase64(identifier, folder, urlLikeStr, 200);
                 } else {
-                    fullFilePath = this.storeCategoryImageFromUrl(identifier, folder, urlLikeStr);
+                    fullFilePath = this.storeCategoryImageFromUrl(identifier, folder, urlLikeStr, 200);
                 }
             }
         } catch (Exception ex)  {
@@ -77,15 +77,15 @@ public class ImageService {
         return fullFilePath;
     }
 
-    public String storeSubImage(String folder, String urlLikeStr, String id, int subId) {
+    public String storeSubImage(String folder, String urlLikeStr, String id, int subId, int size) {
         String fullFilePath = "";
         boolean isBase64 = urlLikeStr.startsWith("data:image/");
 
         try {
             if (isBase64) {
-                fullFilePath = this.storeCategoryImageFromBase64(id + "-" + subId, folder, urlLikeStr);
+                fullFilePath = this.storeCategoryImageFromBase64(id + "-" + subId, folder, urlLikeStr, size);
             } else {
-                fullFilePath = this.storeCategoryImageFromUrl(id + "-" + subId, folder, urlLikeStr);
+                fullFilePath = this.storeCategoryImageFromUrl(id + "-" + subId, folder, urlLikeStr, size);
             }
         } catch (Exception ex)  {
             log.error(ex.getMessage());
@@ -99,7 +99,7 @@ public class ImageService {
         try {
             BufferedImage image = ImageIO.read(URI.create(urlLikeStr).toURL());
 
-            image = this.resizeImage(image);
+            image = this.resizeImage(image, 200);
 
             String newFileName = "movie-" + movieId;
             fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
@@ -112,13 +112,13 @@ public class ImageService {
         return fullFilePath;
     }
 
-    public String storeCategoryImageFromUrl(String identifier, String folder, String url) {
+    public String storeCategoryImageFromUrl(String identifier, String folder, String url, int size) {
         String fullFilePath = "";
 
         try {
             BufferedImage image = ImageIO.read(URI.create(url).toURL());
 
-            fullFilePath = this.execStore(image, folder, identifier);
+            fullFilePath = this.execStore(image, folder, identifier, size);
         } catch (Exception ex)  {
             log.error(ex.getMessage());
         }
@@ -126,7 +126,7 @@ public class ImageService {
         return fullFilePath;
     }
 
-    private String storeCategoryImageFromBase64(String identifier, String folder, String urlLikeStr) {
+    private String storeCategoryImageFromBase64(String identifier, String folder, String urlLikeStr, int size) {
         String fullFilePath = "";
 
         try {
@@ -137,7 +137,7 @@ public class ImageService {
             BufferedImage image = ImageIO.read(bis);
             bis.close();
 
-            fullFilePath = this.execStore(image, folder, identifier);
+            fullFilePath = this.execStore(image, folder, identifier, size);
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }

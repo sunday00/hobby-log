@@ -1,0 +1,23 @@
+extend type Mutation {
+    createDrawLog(drawInput: DrawInput): Result
+    updateDrawLog(drawInput: DrawInput): Result
+}
+
+enum DrawType {
+    BLACK_PENCIL
+    COLOR_PENCIL
+    CG
+    THREE
+    ETC
+}
+
+input DrawInput {
+    id: String
+    title: String
+    content: String
+    thumbnail: String
+    logAtStr: String
+    status: Status
+    mainImage: String
+    drawType: DrawType
+}

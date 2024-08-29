@@ -1,0 +1,18 @@
+extend type Query {
+    getOneWalk(id: String): Walk
+}
+
+type Walk implements BaseSchema {
+    id: String
+    userId: String
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
+    status: Status
+    content: String
+    steps: Int
+    distance: Int
+    duration: Int
+}

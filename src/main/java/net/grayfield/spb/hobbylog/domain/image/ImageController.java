@@ -22,7 +22,8 @@ public class ImageController {
                 addSubImageInput.getFolder(),
                 addSubImageInput.getUrl(),
                 addSubImageInput.getId(),
-                addSubImageInput.getSubId()
+                addSubImageInput.getSubId(),
+                addSubImageInput.getWidth() != null ? addSubImageInput.getWidth() : 1024
         );
 
         return Result.builder().id(addSubImageInput.getId()).success(true).build();

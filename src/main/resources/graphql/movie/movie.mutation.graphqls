@@ -8,8 +8,6 @@ input MovieInput {
     movieId: Long!,
     content: String!,
     ratings: Int!,
-    logAtStr: String
+    logAtStr: String,
+    status: Status
 }
-
-# todo
-# log movie with logAtString

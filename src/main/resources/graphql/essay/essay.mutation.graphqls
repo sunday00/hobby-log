@@ -1,5 +1,6 @@
 extend type Mutation {
     createEssayLog(essayInput: EssayInput): Result
+    updateEssayLog(essayInput: EssayInput): Result
 }
 
 input EssayInput {
@@ -10,4 +11,5 @@ input EssayInput {
     seriesName: String
     thumbnail: String
     logAtStr: String
+    status: Status
 }

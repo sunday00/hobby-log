@@ -50,4 +50,33 @@ public class EssayService {
 
         return this.essayRepository.save(essay);
     }
+
+    public Essay getOneEssayById(String id) {
+        return this.essayRepository.findById(id).orElseThrow();
+    }
+
+    public Essay updateEssay(EssayInput essayInput) throws FileNotFoundException {
+        Essay essay = this.getOneEssayById(essayInput.getId());
+
+        LocalDateTime logAt = StaticHelper.generateLogAt(essayInput.getLogAtStr());
+        String thumbnail = this.storeThumbnail(essayInput, logAt);
+
+        essay.setTitle(essayInput.getTitle());
+        essay.setContent(essayInput.getContent());
+        essay.setWritingType(essayInput.getWritingType());
+        essay.setSeriesName(essayInput.getSeriesName());
+        essay.setThumbnail(thumbnail);
+
+        if(essayInput.getLogAtStr() != null) {
+            essay.setLogAt(logAt);
+        }
+
+        if(essayInput.getStatus() != null) {
+            essay.setStatus(essayInput.getStatus());
+        }
+
+        this.essayRepository.save(essay);
+
+        return essay;
+    }
 }

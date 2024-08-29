@@ -3,8 +3,8 @@ extend type Mutation {
 }
 
 input AddSubImageInput {
-    category: Category,
     id: String,
+    folder: String,
     url: String,
-    serial: Int
+    subId: Int
 }

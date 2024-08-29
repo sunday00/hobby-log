@@ -50,7 +50,6 @@ public class MovieController {
         return this.movieService.searchMovieFromTMDB(search, page);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @QueryMapping
     public Movie getOneMovie(
             @Argument String id,

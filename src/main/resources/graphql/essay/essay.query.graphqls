@@ -1,3 +1,7 @@
+extend type Query {
+    getOneEssay(id: String): Essay
+}
+
 enum WritingType {
     DIARY
     ESSAY

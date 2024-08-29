@@ -61,7 +61,7 @@ public class GalleryService {
         Gallery gallery = this.getOneGalleryById(galleryInput.getId());
 
         LocalDateTime logAt = StaticHelper.generateLogAt(galleryInput.getLogAtStr());
-        String thumbnail = this.storeThumbnail(galleryInput, logAt);
+        String thumbnail = this.storeThumbnail(galleryInput, gallery.getLogAt());
 
         gallery.setTitle(galleryInput.getTitle());
         gallery.setThumbnail(thumbnail);
@@ -70,6 +70,14 @@ public class GalleryService {
         gallery.setLocation(galleryInput.getLocation());
         gallery.setOverview(galleryInput.getOverview());
         gallery.setContent(galleryInput.getContent());
+
+        if(galleryInput.getLogAtStr() != null) {
+            gallery.setLogAt(logAt);
+        }
+
+        if(galleryInput.getStatus() != null) {
+            gallery.setStatus(galleryInput.getStatus());
+        }
 
         this.galleryRepository.save(gallery);
 

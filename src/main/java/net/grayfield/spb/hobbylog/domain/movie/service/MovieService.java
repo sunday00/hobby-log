@@ -15,9 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -208,7 +205,13 @@ public class MovieService {
 
         movie.setContents(movieInput.getContent());
         movie.setRatings(movieInput.getRatings());
-        movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
+        if(movieInput.getLogAtStr() != null) {
+            movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
+        }
+
+        if(movieInput.getStatus() != null) {
+            movie.setStatus(movieInput.getStatus());
+        }
 
         this.movieRepository.save(movie);
 

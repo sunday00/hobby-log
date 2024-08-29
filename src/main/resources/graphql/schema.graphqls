@@ -30,6 +30,8 @@ interface BaseSchema {
 type Result {
     id: String
     success: Boolean
+    message: String
+    status: Int
 }
 
 type Hobby implements BaseSchema {

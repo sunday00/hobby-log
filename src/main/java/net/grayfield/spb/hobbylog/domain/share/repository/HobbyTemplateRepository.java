@@ -2,6 +2,7 @@ package net.grayfield.spb.hobbylog.domain.share.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.essay.struct.Essay;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
@@ -44,6 +45,10 @@ public class HobbyTemplateRepository {
                 return this.mongoTemplate.findAndModify(query, update, Gallery.class);
             }
 
+            case ESSAY -> {
+                return this.mongoTemplate.findAndModify(query, update, Essay.class);
+            }
+
             default -> {
                 return null;
             }
@@ -77,6 +82,7 @@ public class HobbyTemplateRepository {
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
                 UnionWithOperation.unionWith("movie"),
+                UnionWithOperation.unionWith("essay"),
                 Aggregation.match(criteria)
                 );
 
@@ -104,6 +110,7 @@ public class HobbyTemplateRepository {
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
                 UnionWithOperation.unionWith("movie"),
+                UnionWithOperation.unionWith("essay"),
                 Aggregation.match(criteria)
         );
 
@@ -127,6 +134,10 @@ public class HobbyTemplateRepository {
 
             case GALLERY -> {
                 return this.mongoTemplate.findAndRemove(query, Gallery.class);
+            }
+
+            case ESSAY -> {
+                return this.mongoTemplate.findAndRemove(query, Essay.class);
             }
 
             default -> {

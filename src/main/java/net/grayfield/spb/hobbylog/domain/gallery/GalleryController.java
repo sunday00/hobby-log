@@ -29,7 +29,6 @@ public class GalleryController {
         return Result.builder().id(gallery.getId()).success(true).build();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @QueryMapping
     public Gallery getOneGallery (@Argument String id) {
         return this.galleryService.getOneGalleryById(id);

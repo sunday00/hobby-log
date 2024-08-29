@@ -1,0 +1,16 @@
+extend type Mutation {
+    createWalkLog(walkInput: WalkInput): Result
+    updateWalkLog(walkInput: WalkInput): Result
+}
+
+input WalkInput {
+    id: String
+    title: String
+    content: String
+    thumbnail: String
+    logAtStr: String
+    status: Status
+    steps: Int
+    distance: Int
+    duration: Int
+}

@@ -1,0 +1,17 @@
+extend type Query {
+    getOneDraw(id: String): Draw
+}
+
+type Draw implements BaseSchema {
+    id: String
+    userId: String
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
+    status: Status
+    content: String
+    mainImage: String
+    drawType: DrawType
+}

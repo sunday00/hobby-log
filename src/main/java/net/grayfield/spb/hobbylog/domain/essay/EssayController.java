@@ -30,7 +30,11 @@ public class EssayController {
         }  catch (Exception ex) {
             log.error(ex.getMessage());
             log.error(Arrays.toString(ex.getStackTrace()));
-            return Result.builder().id(null).success(false).build();
+            return Result.builder()
+                    .id(null).success(false)
+                    .message(ex.getMessage())
+                    .status(500)
+                    .build();
         }
     }
 

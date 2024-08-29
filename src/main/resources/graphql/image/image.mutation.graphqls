@@ -6,5 +6,6 @@ input AddSubImageInput {
     id: String,
     folder: String,
     url: String,
-    subId: Int
+    subId: Int,
+    width: Int
 }

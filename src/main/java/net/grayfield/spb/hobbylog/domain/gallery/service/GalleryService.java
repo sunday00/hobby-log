@@ -6,13 +6,15 @@ import net.grayfield.spb.hobbylog.domain.gallery.repository.GalleryRepository;
 import net.grayfield.spb.hobbylog.domain.gallery.repository.GalleryTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
+import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
-import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -20,18 +22,19 @@ import java.time.LocalDateTime;
 public class GalleryService {
     private final GalleryRepository galleryRepository;
     private final GalleryTemplateRepository galleryTemplateRepository;
+    private final FileSystemService fileSystemService;
     private final ImageService imageService;
 
-    public String storeThumbnail(GalleryInput galleryInput) {
-        LocalDateTime localDateTime = galleryInput.getLogAt() != null ? LocalDateTime.parse(galleryInput.getLogAt()) : LocalDateTime.now();
-        return this.imageService.storeFromUrl(Category.GALLERY, galleryInput.getThumbnail(), localDateTime);
+    public String storeThumbnail(GalleryInput galleryInput, LocalDateTime logAt) throws FileNotFoundException {
+        String folder = this.fileSystemService.makeCategoryImageFolder(Category.GALLERY, logAt);
+        return this.imageService.storeMainImage(Category.GALLERY, folder, galleryInput.getThumbnail(), logAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH")));
     }
 
-    public Gallery storeGallery(GalleryInput galleryInput, String thumbnail) {
-        LocalDateTime localDateTime = galleryInput.getLogAt() != null ? LocalDateTime.parse(galleryInput.getLogAt()) : LocalDateTime.now();
+    public Gallery storeGallery(GalleryInput galleryInput) throws FileNotFoundException {
+        LocalDateTime logAt = StaticHelper.generateLogAt(galleryInput.getLogAtStr());
+        String thumbnail = this.storeThumbnail(galleryInput, logAt);
 
         Gallery gallery = new Gallery();
-
         gallery.setTitle(galleryInput.getTitle());
         gallery.setGalleryType(galleryInput.getGalleryType());
         gallery.setLocation(galleryInput.getLocation());
@@ -39,7 +42,7 @@ public class GalleryService {
         gallery.setOverview(galleryInput.getOverview());
         gallery.setContent(galleryInput.getContent());
         gallery.setRatings(galleryInput.getRatings());
-        gallery.setLogAt(localDateTime);
+        gallery.setLogAt(logAt);
 
         String updateResultId = this.galleryTemplateRepository.upsertGallery(gallery);
 
@@ -54,8 +57,11 @@ public class GalleryService {
         return this.galleryRepository.findGalleryByIdAndUserId(id, userid).orElseThrow();
     }
 
-    public Gallery updateOneGallery(GalleryInput galleryInput, String thumbnail) {
+    public Gallery updateOneGallery(GalleryInput galleryInput) throws FileNotFoundException {
         Gallery gallery = this.getOneGalleryById(galleryInput.getId());
+
+        LocalDateTime logAt = StaticHelper.generateLogAt(galleryInput.getLogAtStr());
+        String thumbnail = this.storeThumbnail(galleryInput, gallery.getLogAt());
 
         gallery.setTitle(galleryInput.getTitle());
         gallery.setThumbnail(thumbnail);
@@ -64,6 +70,14 @@ public class GalleryService {
         gallery.setLocation(galleryInput.getLocation());
         gallery.setOverview(galleryInput.getOverview());
         gallery.setContent(galleryInput.getContent());
+
+        if(galleryInput.getLogAtStr() != null) {
+            gallery.setLogAt(logAt);
+        }
+
+        if(galleryInput.getStatus() != null) {
+            gallery.setStatus(galleryInput.getStatus());
+        }
 
         this.galleryRepository.save(gallery);
 

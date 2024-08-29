@@ -12,5 +12,6 @@ input GalleryInput {
     overview: String
     content: String
     ratings: Int!
-    logAt: String
+    logAtStr: String
+    status: Status
 }

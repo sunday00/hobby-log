@@ -9,4 +9,8 @@ public class Result {
     private String id;
 
     private Boolean success;
+
+    private int status;
+
+    private String message;
 }

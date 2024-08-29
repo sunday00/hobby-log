@@ -1,8 +1,8 @@
 package net.grayfield.spb.hobbylog.domain.movie.service;
 
-import com.mongodb.client.result.UpdateResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieRepository;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepository;
@@ -18,7 +18,6 @@ import org.springframework.web.client.RestClient;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -33,6 +32,7 @@ public class MovieService {
     @Value("${tmdb.user_email}")
     private String tmdbUserEmail;
 
+    private final FileSystemService fileSystemService;
     private final ImageService imageService;
     private final RestClient movieBaseClient;
     private final MovieRepository movieRepository;
@@ -104,9 +104,8 @@ public class MovieService {
     }
 
     public Result store(
-            Long movieId,
-            MovieRawDetail koDetailRaw, MovieRawDetail enDetailRaw, MovieRawCredit creditRaw, MovieRawKeyword keywordRaw,
-            String content, Integer ratings
+            MovieInput movieInput,
+            MovieRawDetail koDetailRaw, MovieRawDetail enDetailRaw, MovieRawCredit creditRaw, MovieRawKeyword keywordRaw
     ) {
         try {
             List<Crew> directors = creditRaw.getCrews().stream().filter(c -> c.getJob().equals("Director")).toList();
@@ -115,16 +114,24 @@ public class MovieService {
             List<String> keywords = keywordRaw.getKeywords().stream().map(Keyword::getName).toList();
             List<String> productions = enDetailRaw.getProductionCompaniesName();
 
+            Long movieId = movieInput.getMovieId();
+
             Movie movie = new Movie();
             movie.setMovieId(movieId);
 
-            String localPosterImage = this.imageService.storeFromUrl(
+            if(movieInput.getId() != null) {
+                movie.setId(movieInput.getId());
+            }
+
+            String folder = this.fileSystemService.makeMovieFolder(movieId, enDetailRaw.getTitle());
+            String localPosterImage = this.imageService.storeMainImage(
+                    Category.MOVIE,
+                    folder,
                     "https://image.tmdb.org/t/p/w200"
                         + koDetailRaw.getPosterPath(),
-                    movie
+                    movieId.toString()
             );
 
-            movie.setCategory(Category.MOVIE);
             movie.setAdult(koDetailRaw.getAdult());
             movie.setTitle(koDetailRaw.getTitle());
             movie.setOriginalTitle(enDetailRaw.getOriginalTitle());
@@ -139,8 +146,8 @@ public class MovieService {
             movie.setKeywords(keywords);
             movie.setSynopsis(koDetailRaw.getOverview());
             movie.setOriginalSynopsis(enDetailRaw.getOverview());
-            movie.setContents(content);
-            movie.setRatings(ratings);
+            movie.setContents(movieInput.getContent());
+            movie.setRatings(movieInput.getRatings());
             movie.setPopularity(koDetailRaw.getPopularity());
             movie.setVoteAverage(koDetailRaw.getVoteAverage());
             movie.setVoteCount(koDetailRaw.getVoteCount());
@@ -150,6 +157,7 @@ public class MovieService {
             movie.setTagline(koDetailRaw.getTagline());
             movie.setOriginalTagline(enDetailRaw.getTagline());
             movie.setStatus(Status.DRAFT);
+            movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
 
             String resultId = this.movieTemplateRepository.upsertMovie(movie);
 
@@ -192,11 +200,18 @@ public class MovieService {
         return this.movieRepository.findMovieByIdAndUserId(id, userid).orElseThrow();
     }
 
-    public Movie updateOneMovie(MovieUpdate movieUpdate) {
-        Movie movie = this.getOneMovie(movieUpdate.getId());
+    public Movie updateOneMovie(MovieInput movieInput) {
+        Movie movie = this.getOneMovie(movieInput.getId());
 
-        movie.setContents(movieUpdate.getContent());
-        movie.setRatings(movieUpdate.getRatings());
+        movie.setContents(movieInput.getContent());
+        movie.setRatings(movieInput.getRatings());
+        if(movieInput.getLogAtStr() != null) {
+            movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
+        }
+
+        if(movieInput.getStatus() != null) {
+            movie.setStatus(movieInput.getStatus());
+        }
 
         this.movieRepository.save(movie);
 

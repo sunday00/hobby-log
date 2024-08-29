@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -24,7 +23,12 @@ public class CommonService {
             BaseSchema result = this.hobbyTemplateRepository.updateStatus(updateStatusInput.getCategory(), updateStatusInput.getId(), updateStatusInput.getStatus());
 
             if (result == null) {
-                throw new NoSuchElementException();
+                return Result.builder()
+                        .id(updateStatusInput.getId())
+                        .success(false)
+                        .status(404)
+                        .message("NotFound")
+                        .build();
             }
 
             return Result.builder().id(updateStatusInput.getId()).success(true).build();
@@ -32,7 +36,12 @@ public class CommonService {
             log.error(ex.getMessage(), ex);
             log.error("{}", ex.getCause());
             log.error("{}", Arrays.stream(ex.getStackTrace()).toList());
-            return Result.builder().id(updateStatusInput.getId()).success(false).build();
+            return Result.builder()
+                    .id(updateStatusInput.getId())
+                    .success(false)
+                    .status(500)
+                    .message(ex.getMessage())
+                    .build();
         }
     }
 
@@ -61,7 +70,12 @@ public class CommonService {
             BaseSchema result = this.hobbyTemplateRepository.deleteOneHobby(category, id);
 
             if (result == null) {
-                throw new NoSuchElementException();
+                return Result.builder()
+                        .id(id)
+                        .success(false)
+                        .status(404)
+                        .message("NotFound")
+                        .build();
             }
 
             return Result.builder().id(id).success(true).build();
@@ -69,7 +83,11 @@ public class CommonService {
             log.error(ex.getMessage(), ex);
             log.error("{}", ex.getCause());
             log.error("{}", Arrays.stream(ex.getStackTrace()).toList());
-            return Result.builder().id(id).success(false).build();
+            return Result.builder()
+                    .id(id).success(false)
+                    .status(500)
+                    .message(ex.getMessage())
+                    .build();
         }
     }
 }

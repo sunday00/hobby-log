@@ -2,12 +2,8 @@ package net.grayfield.spb.hobbylog.domain.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.datafaker.Faker;
-import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
-import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -17,12 +13,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -30,110 +25,6 @@ import java.util.Base64;
 public class ImageService {
     private String classPath() throws FileNotFoundException {
         return ResourceUtils.getFile("classpath:static").toString();
-    }
-
-    public String storeFromUrl (String url) {
-        String fullFilePath = "";
-
-        try {
-            BufferedImage image = ImageIO.read(URI.create(url).toURL());
-
-            String folder = this.makeFolder(true);
-            String newFileName = this.generateNewName();
-            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
-
-            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
-        } catch (Exception ex)  {
-            log.error(ex.getMessage());
-        }
-
-        return fullFilePath;
-    }
-
-    public String storeFromUrl (String url, Movie movie) {
-        String fullFilePath = "";
-
-        try {
-            BufferedImage image = ImageIO.read(URI.create(url).toURL());
-
-            String folder = this.makeFolder(false);
-            String newFileName = this.generateMovieImageName(movie);
-            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
-
-            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
-        } catch (Exception ex)  {
-            log.error(ex.getMessage());
-        }
-
-        return fullFilePath;
-    }
-
-    public String storeFromUrl (Category category, String url, LocalDateTime localDateTime) {
-        String fullFilePath = "";
-
-        try {
-
-            BufferedImage image = ImageIO.read(URI.create(url).toURL());
-
-            image = this.resizeImage(image);
-
-            String folder = this.makeFolder(false);
-            String newFileName = this.generateCategoryImageName(category, localDateTime);
-            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
-
-            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
-        } catch (Exception ex)  {
-            log.error(ex.getMessage());
-        }
-
-        return fullFilePath;
-    }
-
-    public String storeFromBase64(Category category, String id, String base64Str, int serial) {
-        String fullFilePath = "";
-
-        try {
-            String[] sourceArr = base64Str.split(",");
-
-            byte[] decoded = Base64.getDecoder().decode(sourceArr[1]);
-            ByteArrayInputStream bis = new ByteArrayInputStream(decoded);
-            BufferedImage image = ImageIO.read(bis);
-            bis.close();
-
-            image = this.resizeImage(image);
-            String folder = this.makeFolder(false);
-            String newFileName = this.generateSubImageName(category, id, serial);
-
-            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
-
-            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-        }
-
-        return fullFilePath;
-    }
-
-    public String storeFromRemoteUrlSub(Category category, String id, String url, int serial) {
-        String fullFilePath = "";
-
-        try {
-
-            BufferedImage image = ImageIO.read(URI.create(url).toURL());
-
-            image = this.resizeImage(image);
-
-            String folder = this.makeFolder(false);
-            String newFileName = this.generateSubImageName(category, id, serial);
-
-            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
-
-            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
-        } catch (Exception ex)  {
-            log.error(ex.getMessage());
-        }
-
-        return fullFilePath;
     }
 
     public BufferedImage resizeImage(BufferedImage image) {
@@ -154,43 +45,105 @@ public class ImageService {
         return outputImage;
     }
 
-    public String makeFolder (boolean withDateFolder) throws FileNotFoundException {
-        String folderPath = "/images/upload/" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM"));
+    public String execStore(BufferedImage image, String folder, String identifier) throws IOException {
+        BufferedImage resizedImage = this.resizeImage(image);
+        String newFileName = StaticHelper.getUserId() + "-" + identifier;
 
-        if(withDateFolder)  {
-            folderPath = folderPath + FileSystems.getDefault().getSeparator() +  LocalDate.now().format(DateTimeFormatter.ofPattern("dd"));
+        String fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
+
+        ImageIO.write(resizedImage, "jpg", new File(classPath() + fullFilePath));
+
+        return fullFilePath;
+    }
+
+    public String storeMainImage (Category category, String folder, String urlLikeStr, String identifier) {
+        String fullFilePath = "";
+        boolean isBase64 = urlLikeStr.startsWith("data:image/");
+
+        try {
+            if (Objects.requireNonNull(category) == Category.MOVIE) {
+                fullFilePath = this.storeMovieImage(identifier, folder, urlLikeStr);
+            } else {
+                if (isBase64) {
+                    fullFilePath = this.storeCategoryImageFromBase64(identifier, folder, urlLikeStr);
+                } else {
+                    fullFilePath = this.storeCategoryImageFromUrl(identifier, folder, urlLikeStr);
+                }
+            }
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
         }
 
-        File uploadPathFolder = new File(classPath() + folderPath);
+        return fullFilePath;
+    }
 
-        if(!uploadPathFolder.exists()) {
-            uploadPathFolder.mkdirs();
+    public String storeSubImage(String folder, String urlLikeStr, String id, int subId) {
+        String fullFilePath = "";
+        boolean isBase64 = urlLikeStr.startsWith("data:image/");
+
+        try {
+            if (isBase64) {
+                fullFilePath = this.storeCategoryImageFromBase64(id + "-" + subId, folder, urlLikeStr);
+            } else {
+                fullFilePath = this.storeCategoryImageFromUrl(id + "-" + subId, folder, urlLikeStr);
+            }
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
         }
 
-        return folderPath;
+        return fullFilePath;
     }
 
-    public String generateNewName() {
-        UserAuthentication authentication = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getId();
+    public String storeMovieImage(String movieId, String folder, String urlLikeStr) {
+        String fullFilePath = null;
+        try {
+            BufferedImage image = ImageIO.read(URI.create(urlLikeStr).toURL());
 
-        String hms = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmmss"));
+            image = this.resizeImage(image);
 
-        Faker faker = new Faker();
-        String randomStr = faker.lorem().characters(8);
+            String newFileName = "movie-" + movieId;
+            fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
-        return userId +"-"+ hms +"-"+ randomStr;
+            ImageIO.write(image, "jpg", new File(classPath() + fullFilePath));
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
     }
 
-    public String generateMovieImageName(Movie movie) {
-        return "movie-poster-" + movie.getId();
+    public String storeCategoryImageFromUrl(String identifier, String folder, String url) {
+        String fullFilePath = "";
+
+        try {
+            BufferedImage image = ImageIO.read(URI.create(url).toURL());
+
+            fullFilePath = this.execStore(image, folder, identifier);
+        } catch (Exception ex)  {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
     }
 
-    public String generateCategoryImageName(Category category, LocalDateTime localDateTime) {
-        return category.name().toLowerCase() + "-" + StaticHelper.getUserId() + "-" + localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH"));
+    private String storeCategoryImageFromBase64(String identifier, String folder, String urlLikeStr) {
+        String fullFilePath = "";
+
+        try {
+            String[] sourceArr = urlLikeStr.split(",");
+
+            byte[] decoded = Base64.getDecoder().decode(sourceArr[1]);
+            ByteArrayInputStream bis = new ByteArrayInputStream(decoded);
+            BufferedImage image = ImageIO.read(bis);
+            bis.close();
+
+            fullFilePath = this.execStore(image, folder, identifier);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+        }
+
+        return fullFilePath;
     }
 
-    public String generateSubImageName(Category category, String id, int serial) {
-        return category.name().toLowerCase() + "-" + id + "-sub-" + serial;
-    }
+
 }

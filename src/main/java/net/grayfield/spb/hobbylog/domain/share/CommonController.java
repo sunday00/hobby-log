@@ -29,7 +29,6 @@ public class CommonController {
         return this.commonService.updateStatus(updateStatusInput);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @QueryMapping
     public List<BaseSchema> monthHobby (@Argument String yyyy, @Argument String mm) {
         return this.commonService.findByMonth(yyyy, mm);

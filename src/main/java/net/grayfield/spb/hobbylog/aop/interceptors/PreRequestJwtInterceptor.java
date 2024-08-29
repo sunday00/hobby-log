@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlResponse;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -71,9 +72,15 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                         return;
                     }
 
-                    String jwtToken = Objects.requireNonNull(request.getHeaders()
-                            .getFirst("Authorization"))
-                            .replaceFirst("[b|B]earer ", "");
+                    String jwtToken;
+
+                    try {
+                        jwtToken = Objects.requireNonNull(request.getHeaders()
+                                .getFirst("Authorization"))
+                                .replaceFirst("[b|B]earer ", "");
+                    } catch (Exception ex) {
+                        throw new AuthenticationCredentialsNotFoundException("NoJwtHeader");
+                    }
 
                     String userId = this.jwtService.getUserIdFromJwtToken(jwtToken);
 
@@ -86,6 +93,9 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                 })
                 .onErrorResume(SignWithOtherException.class, ex ->
                     this.jwtService.errorResult(request, ex, "sign", signLocation.get())
+                )
+                .onErrorResume(AuthenticationCredentialsNotFoundException.class, ex ->
+                        this.jwtService.errorResult(request, ex, "sign", signLocation.get())
                 )
                 .onErrorResume(Exception.class, ex ->
                     this.jwtService.errorResult(request, ex, null, signLocation.get())

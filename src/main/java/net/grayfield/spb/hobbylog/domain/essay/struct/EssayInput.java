@@ -1,21 +1,17 @@
-package net.grayfield.spb.hobbylog.domain.gallery.struct;
+package net.grayfield.spb.hobbylog.domain.essay.struct;
 
 import lombok.Data;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import org.springframework.lang.Nullable;
 
 @Data
-public class GalleryInput {
-    @Nullable
+public class EssayInput {
     private String id;
-
     private String title;
-    private GalleryType galleryType;
-    private String location;
-    private String thumbnail;
-    private String overview;
     private String content;
-    private int ratings;
+    private WritingType writingType;
+    private String seriesName;
+    private String thumbnail;
 
     @Nullable
     private Status status;

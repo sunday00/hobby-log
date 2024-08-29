@@ -1,0 +1,26 @@
+extend type Query {
+    getOneEssay(id: String): Essay
+}
+
+enum WritingType {
+    DIARY
+    ESSAY
+    NOVEL
+    POEM
+    ETUDE
+    ETC
+}
+
+type Essay implements BaseSchema {
+    id: String
+    userId: String
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
+    status: Status
+    content: String
+    writingType: WritingType
+    seriesName: String
+}

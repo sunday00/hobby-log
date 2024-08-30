@@ -2,9 +2,11 @@ package net.grayfield.spb.hobbylog.domain.share.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.draw.struct.Draw;
 import net.grayfield.spb.hobbylog.domain.essay.struct.Essay;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.movie.struct.Movie;
+import net.grayfield.spb.hobbylog.domain.read.struct.Read;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
@@ -54,6 +56,14 @@ public class HobbyTemplateRepository {
                 return this.mongoTemplate.findAndModify(query, update, Walk.class);
             }
 
+            case DRAW -> {
+                return this.mongoTemplate.findAndModify(query, update, Draw.class);
+            }
+
+            case READ -> {
+                return this.mongoTemplate.findAndModify(query, update, Read.class);
+            }
+
             default -> {
                 return null;
             }
@@ -87,6 +97,9 @@ public class HobbyTemplateRepository {
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
                 UnionWithOperation.unionWith("movie"),
+                UnionWithOperation.unionWith("walk"),
+                UnionWithOperation.unionWith("draw"),
+                UnionWithOperation.unionWith("read"),
                 UnionWithOperation.unionWith("essay"),
                 Aggregation.match(criteria)
                 );
@@ -115,6 +128,9 @@ public class HobbyTemplateRepository {
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
                 UnionWithOperation.unionWith("movie"),
+                UnionWithOperation.unionWith("walk"),
+                UnionWithOperation.unionWith("draw"),
+                UnionWithOperation.unionWith("read"),
                 UnionWithOperation.unionWith("essay"),
                 Aggregation.match(criteria)
         );
@@ -147,6 +163,14 @@ public class HobbyTemplateRepository {
 
             case WALK -> {
                 return this.mongoTemplate.findAndRemove(query, Walk.class);
+            }
+
+            case DRAW -> {
+                return this.mongoTemplate.findAndRemove(query, Draw.class);
+            }
+
+            case READ -> {
+                return this.mongoTemplate.findAndRemove(query, Read.class);
             }
 
             default -> {

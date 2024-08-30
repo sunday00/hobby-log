@@ -1,0 +1,17 @@
+extend type Mutation {
+    createReadLog(readInput: ReadInput): Result
+    updateReadLog(readInput: ReadInput): Result
+}
+
+input ReadInput {
+    id: String
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAtStr: String
+    status: Status
+    writer: String
+    overview: String!
+    content: String!
+    readType: ReadType!
+}

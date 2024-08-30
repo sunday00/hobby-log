@@ -2,7 +2,6 @@ package net.grayfield.spb.hobbylog.domain.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.grayfield.spb.hobbylog.HobbyLogApplication;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import org.springframework.beans.factory.annotation.Value;
@@ -135,7 +134,7 @@ public class ImageService {
         return fullFilePath;
     }
 
-    private String storeCategoryImageFromBase64(String identifier, String folder, String urlLikeStr, int size) {
+    public String storeCategoryImageFromBase64(String identifier, String folder, String urlLikeStr, int size) {
         String fullFilePath = "";
 
         try {

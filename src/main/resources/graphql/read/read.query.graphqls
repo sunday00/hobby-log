@@ -1,0 +1,25 @@
+extend type Query {
+    getOneRead(id: String): Read
+}
+
+enum ReadType {
+    BOOK
+    BLOG
+    NEWSPAPER
+    ETC
+}
+
+type Read implements BaseSchema {
+    id: String
+    userId: String
+    category: Category
+    title: String
+    thumbnail: String
+    ratings: Int
+    logAt: DateTime
+    status: Status
+    writer: String
+    overview: String
+    content: String
+    readType: ReadType
+}

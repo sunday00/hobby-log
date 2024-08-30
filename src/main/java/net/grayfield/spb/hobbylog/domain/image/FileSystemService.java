@@ -2,6 +2,7 @@ package net.grayfield.spb.hobbylog.domain.image;
 
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -14,8 +15,15 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 @Service
 public class FileSystemService {
+    @Value("${spring.config.activate.on-profile}")
+    private String env;
+
+    @Value("${storage.path}")
+    private String storagePath;
+
     private String classPath() throws FileNotFoundException {
-        return ResourceUtils.getFile("classpath:static").toString();
+        if(env.equals("default")) return ResourceUtils.getFile("classpath:static").toString();
+        return ResourceUtils.getFile(storagePath).toString();
     }
 
     private void execMkdir(String folderPath) throws FileNotFoundException {

@@ -25,6 +25,8 @@ public class SecureConfig {
                     requests
                         .requestMatchers("/graphql", "/graphiql", "/graphql/**").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/images/default/**").permitAll()
+                        .requestMatchers("/images/upload/**").permitAll()
                         .anyRequest().denyAll()
             )
             .sessionManagement(

@@ -1,14 +1,17 @@
 package net.grayfield.spb.hobbylog.domain.user.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import graphql.GraphqlErrorException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.aop.catcher.CustomErrorType;
 import net.grayfield.spb.hobbylog.domain.auth.struct.KakaoMeInfo;
 import net.grayfield.spb.hobbylog.domain.user.repository.UserRepository;
 import net.grayfield.spb.hobbylog.domain.user.struct.Role;
 import net.grayfield.spb.hobbylog.domain.user.struct.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -24,8 +27,18 @@ public class UserService {
     @Value("${jwt.ttl}")
     private Integer ttl;
 
+    @Value("${tmdb.user_email}")
+    private String permittedUserEmail;
+
     public User findOneOrCreateByEmail(KakaoMeInfo info) {
         String email = info.getEmail();
+        if(!email.equals(permittedUserEmail)) {
+            throw GraphqlErrorException.newErrorException()
+                    .message("currently only permitted for server master user. sorry")
+                    .errorClassification(CustomErrorType.UNAUTHORIZED)
+                    .build();
+        }
+
         User exists = userRepository.findByEmail(email);
 
         if(exists != null) return exists;

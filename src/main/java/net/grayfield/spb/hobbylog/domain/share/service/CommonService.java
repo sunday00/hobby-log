@@ -65,6 +65,16 @@ public class CommonService {
         }
     }
 
+    public List<BaseSchema> findByYearAndCategory(String yyyy, Category category) {
+        try {
+            return this.hobbyTemplateRepository.findByYearAndCategory(yyyy, category);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            log.error("{}", Arrays.stream(ex.getStackTrace()).toList());
+            return List.of();
+        }
+    }
+
     public Result deleteOneLog(Category category, String id) {
         try {
             BaseSchema result = this.hobbyTemplateRepository.deleteOneHobby(category, id);

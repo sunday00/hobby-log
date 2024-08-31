@@ -40,6 +40,11 @@ public class CommonController {
         return this.commonService.findNonActiveByMonth(yyyy, mm);
     }
 
+    @QueryMapping
+    public List<BaseSchema> yearByCategory (@Argument String yyyy, @Argument Category category) {
+        return this.commonService.findByYearAndCategory(yyyy, category);
+    }
+
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
     public Result deleteLog(@Argument Category category, @Argument String id) {

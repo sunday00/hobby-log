@@ -142,6 +142,32 @@ public class HobbyTemplateRepository {
         return results.getMappedResults();
     }
 
+    public List<BaseSchema> findByYearAndCategory(String yyyy, Category category) {
+        String userId = StaticHelper.getUserId();
+
+        LocalDateTime startD = LocalDateTime.parse(yyyy + "-01-01T00:00:00");
+        LocalDateTime endD = startD.plusYears(1);
+
+        Criteria criteria = new Criteria()
+                .andOperator(
+                        Criteria.where("logAt").gte(startD),
+                        Criteria.where("logAt").lt(endD),
+                        Criteria.where("userId").is(userId),
+                        Criteria.where("status").is(Status.ACTIVE)
+                );
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
+                Aggregation.match(criteria)
+        );
+
+        AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, category.toString().toLowerCase(), BaseSchema.class);
+
+        log.info("results: {}", results.getMappedResults());
+
+        return results.getMappedResults();
+    }
+
     public BaseSchema deleteOneHobby(Category category, String id) {
         String userId = StaticHelper.getUserId();
 

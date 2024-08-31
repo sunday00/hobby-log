@@ -1,6 +1,7 @@
 type Query {
     monthHobby(yyyy: String, mm: String): [Hobby]
     monthNonActiveHobby(yyyy: String, mm: String): [Hobby]
+    yearByCategory(yyyy: String, category:Category): [Hobby]
 }
 
 type Mutation {

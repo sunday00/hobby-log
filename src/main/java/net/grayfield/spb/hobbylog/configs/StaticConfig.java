@@ -2,6 +2,7 @@ package net.grayfield.spb.hobbylog.configs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -10,6 +11,9 @@ public class StaticConfig implements WebMvcConfigurer {
 
     @Value("${storage.path}")
     private String storagePath;
+
+    @Value("${spring.security.cors.origin}")
+    private String corsOrigin;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -28,6 +32,16 @@ public class StaticConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:"+storagePath+"images/upload/")
                 .addResourceLocations("file:"+storagePath+"images/upload/")
                 .setCachePeriod(100)
+        ;
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns(corsOrigin)
+                .allowedHeaders("*")
+                .allowedMethods("*")
+                .allowCredentials(true)
         ;
     }
 }

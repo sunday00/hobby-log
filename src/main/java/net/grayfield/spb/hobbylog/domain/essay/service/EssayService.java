@@ -54,8 +54,13 @@ public class EssayService {
         return this.essayRepository.findById(id).orElseThrow();
     }
 
+    public Essay getOneEssayById(String id, String userId) {
+        return this.essayRepository.findByIdAndUserId(id, userId).orElseThrow();
+    }
+
     public Essay updateEssay(EssayInput essayInput) throws FileNotFoundException {
-        Essay essay = this.getOneEssayById(essayInput.getId());
+        String userId = StaticHelper.getUserId();
+        Essay essay = this.getOneEssayById(essayInput.getId(), userId);
 
         LocalDateTime logAt = StaticHelper.generateLogAt(essayInput.getLogAtStr());
         String thumbnail = this.storeThumbnail(essayInput, logAt);

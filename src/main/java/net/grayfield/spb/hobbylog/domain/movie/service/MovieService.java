@@ -195,13 +195,17 @@ public class MovieService {
     }
 
     public Movie getOneMovie(String id) {
-        String userid = StaticHelper.getUserId();
+        return this.movieRepository.findMovieById(id).orElseThrow();
+    }
 
-        return this.movieRepository.findMovieByIdAndUserId(id, userid).orElseThrow();
+    public Movie getOneMovie(String id, String userId) {
+        return this.movieRepository.findMovieByIdAndUserId(id, userId).orElseThrow();
     }
 
     public Movie updateOneMovie(MovieInput movieInput) {
-        Movie movie = this.getOneMovie(movieInput.getId());
+        String userid = StaticHelper.getUserId();
+
+        Movie movie = this.getOneMovie(movieInput.getId(), userid);
 
         movie.setContents(movieInput.getContent());
         movie.setRatings(movieInput.getRatings());

@@ -60,8 +60,13 @@ public class DrawService {
         return this.drawRepository.findById(id).orElseThrow();
     }
 
+    public Draw getOneDrawById(String id, String userId) {
+        return this.drawRepository.findByIdAndUserId(id, userId).orElseThrow();
+    }
+
     public Draw updateDraw(DrawInput drawInput) throws FileNotFoundException {
-        Draw draw = this.getOneDrawById(drawInput.getId());
+        String userId = StaticHelper.getUserId();
+        Draw draw = this.getOneDrawById(drawInput.getId(), userId);
 
         LocalDateTime logAt = StaticHelper.generateLogAt(drawInput.getLogAtStr());
         String folder = this.fileSystemService.makeCategoryImageFolder(Category.DRAW, logAt);

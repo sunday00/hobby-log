@@ -6,5 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface GalleryRepository extends MongoRepository<Gallery, Long> {
+    Optional<Gallery> findGalleryById(String id);
+
     Optional<Gallery> findGalleryByIdAndUserId(String id, String userid);
 }

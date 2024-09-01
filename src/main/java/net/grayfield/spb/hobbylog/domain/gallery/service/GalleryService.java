@@ -52,13 +52,16 @@ public class GalleryService {
     }
 
     public Gallery getOneGalleryById(String id) {
-        String userid = StaticHelper.getUserId();
+        return this.galleryRepository.findGalleryById(id).orElseThrow();
+    }
 
-        return this.galleryRepository.findGalleryByIdAndUserId(id, userid).orElseThrow();
+    public Gallery getOneGalleryById(String id, String userId) {
+        return this.galleryRepository.findGalleryByIdAndUserId(id, userId).orElseThrow();
     }
 
     public Gallery updateOneGallery(GalleryInput galleryInput) throws FileNotFoundException {
-        Gallery gallery = this.getOneGalleryById(galleryInput.getId());
+        String userid = StaticHelper.getUserId();
+        Gallery gallery = this.getOneGalleryById(galleryInput.getId(), userid);
 
         LocalDateTime logAt = StaticHelper.generateLogAt(galleryInput.getLogAtStr());
         String thumbnail = this.storeThumbnail(galleryInput, gallery.getLogAt());

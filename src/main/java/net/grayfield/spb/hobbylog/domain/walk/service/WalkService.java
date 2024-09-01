@@ -55,8 +55,13 @@ public class WalkService {
         return this.walkRepository.findById(id).orElseThrow();
     }
 
+    public Walk getOneWalkById(String id, String userId) {
+        return this.walkRepository.findByIdAndUserId(id, userId).orElseThrow();
+    }
+
     public Walk updateWalk(WalkInput walkInput) throws FileNotFoundException {
-        Walk walk = this.getOneWalkById(walkInput.getId());
+        String userId = StaticHelper.getUserId();
+        Walk walk = this.getOneWalkById(walkInput.getId(), userId);
 
         LocalDateTime logAt = StaticHelper.generateLogAt(walkInput.getLogAtStr());
         String thumbnail = this.storeThumbnail(walkInput, logAt);

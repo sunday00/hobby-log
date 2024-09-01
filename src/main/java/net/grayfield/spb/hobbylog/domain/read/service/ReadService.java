@@ -55,8 +55,13 @@ public class ReadService {
         return this.readRepository.findById(id).orElseThrow();
     }
 
+    public Read getOneReadById(String id, String userId) {
+        return this.readRepository.findByIdAndUserId(id, userId).orElseThrow();
+    }
+
     public Read updateRead(ReadInput readInput) throws FileNotFoundException {
-        Read read = this.getOneReadById(readInput.getId());
+        String userId = StaticHelper.getUserId();
+        Read read = this.getOneReadById(readInput.getId(), userId);
 
         LocalDateTime logAt = StaticHelper.generateLogAt(readInput.getLogAtStr());
         String thumbnail = this.storeThumbnail(readInput, logAt);

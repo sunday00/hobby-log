@@ -6,5 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface MovieRepository extends MongoRepository<Movie, String> {
-    Optional<Movie> findMovieByIdAndUserId(String id, String userid);
+    Optional<Movie> findMovieById(String id);
+
+    Optional<Movie> findMovieByIdAndUserId(String id, String userId);
 }

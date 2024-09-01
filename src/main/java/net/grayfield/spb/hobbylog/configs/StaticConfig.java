@@ -25,6 +25,7 @@ public class StaticConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/images/default/**")
                 .addResourceLocations("classpath:"+storagePath+"images/default/")
+                .addResourceLocations("file:"+storagePath+"images/default/")
                 .setCachePeriod(100)
         ;
 

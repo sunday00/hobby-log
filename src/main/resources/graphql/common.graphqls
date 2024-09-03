@@ -6,7 +6,7 @@ type Query {
 
 type Mutation {
     updateStatus(updateStatusInput: UpdateStatusInput): Result
-    deleteLog(category: Category, id: String): Result
+    deleteLog(category: Category, id: String, flag: String): Result
 }
 
 input UpdateStatusInput {

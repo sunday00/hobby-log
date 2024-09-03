@@ -47,7 +47,7 @@ public class CommonController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
-    public Result deleteLog(@Argument Category category, @Argument String id) {
-        return this.commonService.deleteOneLog(category, id);
+    public Result deleteLog(@Argument Category category, @Argument String id, @Argument String flag) {
+        return this.commonService.deleteOneLog(category, id, flag);
     }
 }

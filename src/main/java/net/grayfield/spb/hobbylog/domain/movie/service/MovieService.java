@@ -221,4 +221,20 @@ public class MovieService {
 
         return movie;
     }
+
+    public void deleteRemote(String id) {
+        if(!StaticHelper.getUserEmail().equals(this.tmdbUserEmail)) return;
+
+        String userId = StaticHelper.getUserId();
+        Movie movie = this.getOneMovie(id, userId);
+
+        this.movieBaseClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/3/movie/" + movie.getMovieId() + "/rating")
+                        .build()
+                )
+                .header("Authorization", "Bearer " + tmdbApiToken)
+                .retrieve()
+        ;
+    }
 }

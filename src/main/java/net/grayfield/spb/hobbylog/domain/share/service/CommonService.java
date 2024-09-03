@@ -2,6 +2,7 @@ package net.grayfield.spb.hobbylog.domain.share.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.movie.service.MovieService;
 import net.grayfield.spb.hobbylog.domain.share.repository.HobbyTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommonService {
     private final HobbyTemplateRepository hobbyTemplateRepository;
+    private final MovieService movieService;
 
     public Result updateStatus(UpdateStatusInput updateStatusInput) {
         try {
@@ -75,8 +77,12 @@ public class CommonService {
         }
     }
 
-    public Result deleteOneLog(Category category, String id) {
+    public Result deleteOneLog(Category category, String id, String flag) {
         try {
+            if(category == Category.MOVIE && !flag.equals("skipRemote")) {
+                this.movieService.deleteRemote(id);
+            }
+
             BaseSchema result = this.hobbyTemplateRepository.deleteOneHobby(category, id);
 
             if (result == null) {

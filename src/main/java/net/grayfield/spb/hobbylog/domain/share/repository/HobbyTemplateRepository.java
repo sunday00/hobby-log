@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.aggregation.UnionWithOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -70,8 +71,8 @@ public class HobbyTemplateRepository {
         }
     }
 
-    public List<BaseSchema> findByMonth(String yyyy, String mm) {
-        String userId = StaticHelper.getUserId();
+    public List<BaseSchema> findByMonth(String yyyy, String mm, @Nullable String userId) {
+        String myId = StaticHelper.getUserId();
 
         LocalDateTime baseD = LocalDateTime.parse(yyyy + "-" + mm + "-01T00:00:00");
 
@@ -86,13 +87,30 @@ public class HobbyTemplateRepository {
         LocalDateTime endD = baseD.plusMonths(1);
 
         Criteria criteria = new Criteria()
-                .andOperator(
-                        Criteria.where("logAt").gte(startD),
-                        Criteria.where("logAt").lt(endD),
-                        Criteria.where("status").is(Status.ACTIVE),
-                        Criteria.where("userId").is(userId)
-                )
+
             ;
+
+        if(userId != null && userId.equals("my")) {
+            criteria.andOperator(
+                    Criteria.where("logAt").gte(startD),
+                    Criteria.where("logAt").lt(endD),
+                    Criteria.where("status").is(Status.ACTIVE),
+                    Criteria.where("userId").is(myId)
+            );
+        } else if (userId != null) {
+            criteria.andOperator(
+                    Criteria.where("logAt").gte(startD),
+                    Criteria.where("logAt").lt(endD),
+                    Criteria.where("status").is(Status.ACTIVE),
+                    Criteria.where("userId").is(userId)
+            );
+        } else {
+            criteria.andOperator(
+                    Criteria.where("logAt").gte(startD),
+                    Criteria.where("logAt").lt(endD),
+                    Criteria.where("status").is(Status.ACTIVE)
+            );
+        }
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),

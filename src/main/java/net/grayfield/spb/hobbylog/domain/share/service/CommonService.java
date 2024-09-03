@@ -49,7 +49,11 @@ public class CommonService {
 
     public List<BaseSchema> findByMonth(String yyyy, String mm) {
         try {
-            return this.hobbyTemplateRepository.findByMonth(yyyy, mm);
+            // TODO:
+            // add only mine
+            // add only my followed user
+            // currently working all people logs
+            return this.hobbyTemplateRepository.findByMonth(yyyy, mm, null);
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             log.error("{}", Arrays.stream(ex.getStackTrace()).toList());

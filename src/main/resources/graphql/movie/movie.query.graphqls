@@ -29,6 +29,7 @@ type MovieRaw {
 
 type Movie implements BaseSchema {
     id: String
+    movieId: Long
     userId: String
     category: Category
     title: String

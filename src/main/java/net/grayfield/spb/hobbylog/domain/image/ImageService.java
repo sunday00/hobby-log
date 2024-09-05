@@ -68,6 +68,8 @@ public class ImageService {
         String fullFilePath = "";
         boolean isBase64 = urlLikeStr.startsWith("data:image/");
 
+        if (urlLikeStr.startsWith("/")) return urlLikeStr;
+
         try {
             if (Objects.requireNonNull(category) == Category.MOVIE) {
                 fullFilePath = this.storeMovieImage(identifier, folder, urlLikeStr);

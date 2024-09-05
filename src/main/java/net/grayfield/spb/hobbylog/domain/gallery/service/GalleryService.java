@@ -10,6 +10,7 @@ import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -42,6 +43,7 @@ public class GalleryService {
         gallery.setOverview(galleryInput.getOverview());
         gallery.setContent(galleryInput.getContent());
         gallery.setRatings(galleryInput.getRatings());
+        gallery.setStatus(galleryInput.getStatus() != null ? galleryInput.getStatus() : Status.DRAFT);
         gallery.setLogAt(logAt);
 
         String updateResultId = this.galleryTemplateRepository.upsertGallery(gallery);

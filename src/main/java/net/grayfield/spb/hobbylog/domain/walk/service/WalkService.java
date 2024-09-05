@@ -41,7 +41,7 @@ public class WalkService {
         walk.setTitle(walkInput.getTitle());
         walk.setThumbnail(thumbnail);
         walk.setRatings(0);
-        walk.setStatus(Status.DRAFT);
+        walk.setStatus(walkInput.getStatus() != null ? walkInput.getStatus() : Status.DRAFT);
         walk.setContent(walkInput.getContent());
         walk.setLogAt(logAt);
         walk.setSteps(walkInput.getSteps());

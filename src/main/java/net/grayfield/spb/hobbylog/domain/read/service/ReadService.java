@@ -41,7 +41,7 @@ public class ReadService {
         read.setTitle(readInput.getTitle());
         read.setThumbnail(thumbnail);
         read.setRatings(readInput.getRatings());
-        read.setStatus(Status.DRAFT);
+        read.setStatus(readInput.getStatus() != null ? readInput.getStatus() : Status.DRAFT);
         read.setWriter(readInput.getWriter());
         read.setOverview(readInput.getOverview());
         read.setContent(readInput.getContent());

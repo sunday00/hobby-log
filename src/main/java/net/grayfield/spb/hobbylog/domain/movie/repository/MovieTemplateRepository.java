@@ -48,7 +48,7 @@ public class MovieTemplateRepository {
         update.set("thumbnail", movie.getThumbnail());
         update.set("ratings", movie.getRatings());
         update.set("logAt", movie.getLogAt());
-        update.set("status", Status.DRAFT);
+        update.set("status", movie.getStatus());
 
         Arrays.stream(Movie.class.getDeclaredFields()).toList().forEach(f -> {
             try {

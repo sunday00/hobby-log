@@ -156,7 +156,7 @@ public class MovieService {
             movie.setRuntime(koDetailRaw.getRuntime());
             movie.setTagline(koDetailRaw.getTagline());
             movie.setOriginalTagline(enDetailRaw.getTagline());
-            movie.setStatus(Status.DRAFT);
+            movie.setStatus(movieInput.getStatus() != null ? movieInput.getStatus() : Status.DRAFT);
             movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
 
             String resultId = this.movieTemplateRepository.upsertMovie(movie);

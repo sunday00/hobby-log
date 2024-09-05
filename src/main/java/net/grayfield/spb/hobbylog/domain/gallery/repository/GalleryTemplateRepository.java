@@ -37,7 +37,7 @@ public class GalleryTemplateRepository {
         update.set("thumbnail", gallery.getThumbnail());
         update.set("ratings", gallery.getRatings());
         update.set("logAt", gallery.getLogAt());
-        update.set("status", Status.DRAFT);
+        update.set("status", gallery.getStatus());
 
         Arrays.stream(Gallery.class.getDeclaredFields()).toList().forEach(f -> {
             try {

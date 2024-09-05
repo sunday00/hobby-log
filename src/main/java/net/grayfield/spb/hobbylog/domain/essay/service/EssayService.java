@@ -41,7 +41,7 @@ public class EssayService {
         essay.setTitle(essayInput.getTitle());
         essay.setThumbnail(thumbnail);
         essay.setRatings(0);
-        essay.setStatus(Status.DRAFT);
+        essay.setStatus(essayInput.getStatus() != null ? essayInput.getStatus() : Status.DRAFT);
         essay.setContent(essayInput.getContent());
         essay.setWritingType(essayInput.getWritingType());
         essay.setSeriesName(essay.getSeriesName());

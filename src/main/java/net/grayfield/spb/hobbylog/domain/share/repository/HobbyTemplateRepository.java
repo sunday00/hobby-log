@@ -113,7 +113,7 @@ public class HobbyTemplateRepository {
         }
 
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
+                Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status"),
                 UnionWithOperation.unionWith("movie"),
                 UnionWithOperation.unionWith("walk"),
                 UnionWithOperation.unionWith("draw"),
@@ -144,7 +144,7 @@ public class HobbyTemplateRepository {
                 );
 
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
+                Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status"),
                 UnionWithOperation.unionWith("movie"),
                 UnionWithOperation.unionWith("walk"),
                 UnionWithOperation.unionWith("draw"),
@@ -161,7 +161,7 @@ public class HobbyTemplateRepository {
     }
 
     public List<BaseSchema> findByYearAndCategory(String yyyy, Category category) {
-        String userId = StaticHelper.getUserId();
+//        String userId = StaticHelper.getUserId();
 
         LocalDateTime startD = LocalDateTime.parse(yyyy + "-01-01T00:00:00");
         LocalDateTime endD = startD.plusYears(1);
@@ -170,16 +170,45 @@ public class HobbyTemplateRepository {
                 .andOperator(
                         Criteria.where("logAt").gte(startD),
                         Criteria.where("logAt").lt(endD),
-                        Criteria.where("userId").is(userId),
+//                        Criteria.where("userId").is(userId),
                         Criteria.where("status").is(Status.ACTIVE)
                 );
 
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.project("id", "userId", "title", "category", "thumbnail", "ratings",  "logAt", "status"),
+                Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status"),
                 Aggregation.match(criteria)
         );
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, category.toString().toLowerCase(), BaseSchema.class);
+
+        log.info("results: {}", results.getMappedResults());
+
+        return results.getMappedResults();
+    }
+
+    public List<BaseSchema> searchHobby(String search, Long page) {
+        Criteria criteria = new Criteria()
+                .andOperator(
+                        Criteria.where("status").is(Status.ACTIVE),
+                        new Criteria().orOperator(
+                            Criteria.where("title").regex(search),
+                            Criteria.where("seriesName").regex(search)
+                        )
+                );
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status"),
+                UnionWithOperation.unionWith("movie"),
+                UnionWithOperation.unionWith("walk"),
+                UnionWithOperation.unionWith("draw"),
+                UnionWithOperation.unionWith("read"),
+                UnionWithOperation.unionWith("essay"),
+                Aggregation.match(criteria),
+                Aggregation.skip((page - 1) * 20),
+                Aggregation.limit(20)
+        );
+
+        AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
 
         log.info("results: {}", results.getMappedResults());
 

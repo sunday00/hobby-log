@@ -45,6 +45,11 @@ public class CommonController {
         return this.commonService.findByYearAndCategory(yyyy, category);
     }
 
+    @QueryMapping
+    public List<BaseSchema> searchHobby(@Argument String search, @Argument Long page) {
+        return this.commonService.searchHobby(search, page);
+    }
+
     @PreAuthorize("hasRole('ROLE_USER')")
     @MutationMapping
     public Result deleteLog(@Argument Category category, @Argument String id, @Argument String flag) {

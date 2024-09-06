@@ -7,6 +7,7 @@ import net.grayfield.spb.hobbylog.domain.essay.repository.EssayRepository;
 import net.grayfield.spb.hobbylog.domain.essay.repository.EssayTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.essay.struct.Essay;
 import net.grayfield.spb.hobbylog.domain.essay.struct.EssayInput;
+import net.grayfield.spb.hobbylog.domain.essay.struct.Series;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -66,6 +68,10 @@ public class EssayService {
         }
 
         return stored;
+    }
+
+    public List<Series> getSeriesListByKeyword(String search) {
+        return this.essayTemplateRepository.getSeriesListByKeyword(search);
     }
 
     public Essay getOneEssayById(String id) {

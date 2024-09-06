@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class Series {
     private String id;
     private String seriesKey;
+    private String seriesName;
     private String title;
     private LocalDateTime logAt;
 }

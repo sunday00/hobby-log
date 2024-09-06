@@ -11,6 +11,13 @@ enum WritingType {
     ETC
 }
 
+type Series {
+    id: String
+    seriesKey: String
+    title: String
+    logAt: DateTime
+}
+
 type Essay implements BaseSchema {
     id: String
     userId: String
@@ -22,5 +29,7 @@ type Essay implements BaseSchema {
     status: Status
     content: String
     writingType: WritingType
+    seriesKey: String
     seriesName: String
+    series: [Series]
 }

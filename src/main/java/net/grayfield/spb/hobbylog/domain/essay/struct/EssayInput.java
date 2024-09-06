@@ -10,8 +10,13 @@ public class EssayInput {
     private String title;
     private String content;
     private WritingType writingType;
-    private String seriesName;
     private String thumbnail;
+
+    @Nullable
+    private String seriesKey;
+
+    @Nullable
+    private String seriesName;
 
     @Nullable
     private Status status;

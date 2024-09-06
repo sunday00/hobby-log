@@ -9,6 +9,7 @@ input EssayInput {
     content: String!
     writingType: WritingType!
     seriesName: String
+    seriesKey: String
     thumbnail: String
     logAtStr: String
     status: Status

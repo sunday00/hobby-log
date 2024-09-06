@@ -1,8 +1,10 @@
 package net.grayfield.spb.hobbylog.domain.essay.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.essay.repository.EssayRepository;
+import net.grayfield.spb.hobbylog.domain.essay.repository.EssayTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.essay.struct.Essay;
 import net.grayfield.spb.hobbylog.domain.essay.struct.EssayInput;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
@@ -23,8 +25,10 @@ public class EssayService {
     private final ImageService imageService;
     private final FileSystemService fileSystemService;
     private final EssayRepository essayRepository;
+    private final EssayTemplateRepository essayTemplateRepository;
 
     public String storeThumbnail(EssayInput essayInput, LocalDateTime logAt) throws FileNotFoundException {
+        if(essayInput.getThumbnail() == null) { return null; }
         String folder = this.fileSystemService.makeCategoryImageFolder(Category.ESSAY, logAt);
         return this.imageService.storeMainImage(Category.ESSAY, folder, essayInput.getThumbnail(), logAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH")));
     }
@@ -44,14 +48,28 @@ public class EssayService {
         essay.setStatus(essayInput.getStatus() != null ? essayInput.getStatus() : Status.DRAFT);
         essay.setContent(essayInput.getContent());
         essay.setWritingType(essayInput.getWritingType());
-        essay.setSeriesName(essay.getSeriesName());
+
+        if (essayInput.getSeriesName() != null) {
+            essay.setSeriesName(essayInput.getSeriesName());
+        }
+
+        if(essayInput.getSeriesKey() != null) {
+            essay.setSeriesKey(essayInput.getSeriesKey());
+        }
+
         essay.setLogAt(logAt);
 
-        return this.essayRepository.save(essay);
+        Essay stored = this.essayRepository.save(essay);
+        if(essayInput.getSeriesName() != null && essayInput.getSeriesKey() == null) {
+            stored.setSeriesKey(stored.getId());
+            stored = this.essayRepository.save(stored);
+        }
+
+        return stored;
     }
 
     public Essay getOneEssayById(String id) {
-        return this.essayRepository.findById(id).orElseThrow();
+        return this.essayTemplateRepository.getOneEssayByIdWithSeries(id);
     }
 
     public Essay getOneEssayById(String id, String userId) {

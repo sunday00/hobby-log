@@ -2,6 +2,7 @@ type Query {
     monthHobby(yyyy: String, mm: String): [Hobby]
     monthNonActiveHobby(yyyy: String, mm: String): [Hobby]
     yearByCategory(yyyy: String, category:Category): [Hobby]
+    searchHobby(search: String, page: Long = 1): [Hobby]
 }
 
 type Mutation {

@@ -1,5 +1,6 @@
 extend type Query {
     getOneEssay(id: String): Essay
+    searchSeries(search: String): [Series]
 }
 
 enum WritingType {
@@ -9,6 +10,14 @@ enum WritingType {
     POEM
     ETUDE
     ETC
+}
+
+type Series {
+    id: String
+    seriesName: String
+    seriesKey: String
+    title: String
+    logAt: DateTime
 }
 
 type Essay implements BaseSchema {
@@ -22,5 +31,7 @@ type Essay implements BaseSchema {
     status: Status
     content: String
     writingType: WritingType
+    seriesKey: String
     seriesName: String
+    series: [Series]
 }

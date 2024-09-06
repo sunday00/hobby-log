@@ -1,10 +1,12 @@
 package net.grayfield.spb.hobbylog.domain.essay;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.essay.service.EssayService;
 import net.grayfield.spb.hobbylog.domain.essay.struct.Essay;
 import net.grayfield.spb.hobbylog.domain.essay.struct.EssayInput;
+import net.grayfield.spb.hobbylog.domain.essay.struct.Series;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -13,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -36,6 +39,11 @@ public class EssayController {
                     .status(500)
                     .build();
         }
+    }
+
+    @QueryMapping
+    public List<Series> searchSeries(@Argument String search) {
+        return this.essayService.getSeriesListByKeyword(search);
     }
 
     @QueryMapping

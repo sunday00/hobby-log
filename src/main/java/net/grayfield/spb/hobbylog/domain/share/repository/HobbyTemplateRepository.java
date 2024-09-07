@@ -12,6 +12,7 @@ import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import net.grayfield.spb.hobbylog.domain.walk.struct.Walk;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -86,9 +87,7 @@ public class HobbyTemplateRepository {
         LocalDateTime startD = baseD.minusMonths(1);
         LocalDateTime endD = baseD.plusMonths(1);
 
-        Criteria criteria = new Criteria()
-
-            ;
+        Criteria criteria = new Criteria();
 
         if(userId != null && userId.equals("my")) {
             criteria.andOperator(
@@ -119,7 +118,8 @@ public class HobbyTemplateRepository {
                 UnionWithOperation.unionWith("draw"),
                 UnionWithOperation.unionWith("read"),
                 UnionWithOperation.unionWith("essay"),
-                Aggregation.match(criteria)
+                Aggregation.match(criteria),
+                Aggregation.sort(Sort.Direction.DESC, "logAt")
                 );
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
@@ -150,7 +150,8 @@ public class HobbyTemplateRepository {
                 UnionWithOperation.unionWith("draw"),
                 UnionWithOperation.unionWith("read"),
                 UnionWithOperation.unionWith("essay"),
-                Aggregation.match(criteria)
+                Aggregation.match(criteria),
+                Aggregation.sort(Sort.Direction.DESC, "logAt")
         );
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
@@ -176,7 +177,8 @@ public class HobbyTemplateRepository {
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status"),
-                Aggregation.match(criteria)
+                Aggregation.match(criteria),
+                Aggregation.sort(Sort.Direction.DESC, "logAt")
         );
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, category.toString().toLowerCase(), BaseSchema.class);
@@ -205,7 +207,8 @@ public class HobbyTemplateRepository {
                 UnionWithOperation.unionWith("essay"),
                 Aggregation.match(criteria),
                 Aggregation.skip((page - 1) * 20),
-                Aggregation.limit(20)
+                Aggregation.limit(20),
+                Aggregation.sort(Sort.Direction.DESC, "logAt")
         );
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);

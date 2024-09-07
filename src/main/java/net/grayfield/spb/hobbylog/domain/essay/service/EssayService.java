@@ -12,6 +12,7 @@ import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -50,6 +52,8 @@ public class EssayService {
         essay.setStatus(essayInput.getStatus() != null ? essayInput.getStatus() : Status.DRAFT);
         essay.setContent(essayInput.getContent());
         essay.setWritingType(essayInput.getWritingType());
+        essay.setSeriesKey("");
+        essay.setSeriesName("");
 
         if (essayInput.getSeriesName() != null) {
             essay.setSeriesName(essayInput.getSeriesName());
@@ -62,7 +66,7 @@ public class EssayService {
         essay.setLogAt(logAt);
 
         Essay stored = this.essayRepository.save(essay);
-        if(essayInput.getSeriesName() != null && essayInput.getSeriesKey() == null) {
+        if(!essay.getSeriesName().isEmpty() && essay.getSeriesKey().isEmpty()) {
             stored.setSeriesKey(stored.getId());
             stored = this.essayRepository.save(stored);
         }
@@ -94,6 +98,20 @@ public class EssayService {
         essay.setWritingType(essayInput.getWritingType());
         essay.setSeriesName(essayInput.getSeriesName());
         essay.setThumbnail(thumbnail);
+        essay.setSeriesKey("");
+        essay.setSeriesName("");
+
+        if (essayInput.getSeriesName() != null) {
+            essay.setSeriesName(essayInput.getSeriesName());
+        }
+
+        if(essayInput.getSeriesKey() != null) {
+            essay.setSeriesKey(essayInput.getSeriesKey());
+        }
+
+        if(!essay.getSeriesName().isEmpty() && essay.getSeriesKey().isEmpty()) {
+            essay.setSeriesKey(essayInput.getId());
+        }
 
         if(essayInput.getLogAtStr() != null) {
             essay.setLogAt(logAt);
@@ -106,5 +124,17 @@ public class EssayService {
         this.essayRepository.save(essay);
 
         return essay;
+    }
+
+    public Result deleteSeries(String id) {
+        Essay essay = this.getOneEssayById(id);
+
+        if (essay.getId().equals(essay.getSeriesKey())) {
+            this.essayRepository.deleteAllBySeriesKey(id);
+        } else {
+            this.essayRepository.deleteOneById(id);
+        }
+
+        return Result.builder().id(essay.getId()).success(true).build();
     }
 }

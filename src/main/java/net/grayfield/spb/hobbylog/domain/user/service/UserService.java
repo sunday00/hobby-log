@@ -54,6 +54,8 @@ public class UserService {
     }
 
     public void createUserSession(User user) throws JsonProcessingException {
+        log.debug("currently create to redis");
+
         try {
             String key = "session:" + user.getId();
             this.redisTemplate.opsForValue().set(key, user);

@@ -31,7 +31,6 @@ public class UserService {
         String email = info.getEmail();
 
         // TODO BLOCK USER by email
-
         User exists = userRepository.findByEmail(email);
 
         if(exists != null) return exists;

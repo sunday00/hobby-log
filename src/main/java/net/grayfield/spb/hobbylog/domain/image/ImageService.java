@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.FileSystems;
 import java.util.Base64;
 import java.util.Objects;
@@ -43,8 +44,7 @@ public class ImageService {
 
         height = (int) (height * ratio);
 
-        BufferedImage outputImage =
-                new BufferedImage(size, height, image.getType());
+        BufferedImage outputImage = new BufferedImage(size, height, image.getType());
 
         Graphics2D graphics2D = outputImage.createGraphics();
         graphics2D.drawImage(image, 0, 0, size, height, null);
@@ -53,13 +53,13 @@ public class ImageService {
         return outputImage;
     }
 
-    public String execStore(BufferedImage image, String folder, String identifier, int size) throws IOException {
+    public String execStore(BufferedImage image, String ext, String folder, String identifier, int size) throws IOException {
         BufferedImage resizedImage = this.resizeImage(image, size);
         String newFileName = StaticHelper.getUserId() + "-" + identifier;
 
         String fullFilePath = folder + FileSystems.getDefault().getSeparator() + newFileName + ".jpg";
 
-        ImageIO.write(resizedImage, "jpg", new File(classPath() + fullFilePath));
+        ImageIO.write(resizedImage, ext, new File(classPath() + fullFilePath));
 
         return fullFilePath;
     }
@@ -126,9 +126,11 @@ public class ImageService {
         String fullFilePath = "";
 
         try {
-            BufferedImage image = ImageIO.read(URI.create(url).toURL());
+            URL urlObj = URI.create(url).toURL();
+            BufferedImage image = ImageIO.read(urlObj);
+            String ext = urlObj.openConnection().getContentType().replace("image/", "");
 
-            fullFilePath = this.execStore(image, folder, identifier, size);
+            fullFilePath = this.execStore(image, ext ,folder, identifier, size);
         } catch (Exception ex)  {
             log.error(ex.getMessage());
         }
@@ -142,12 +144,14 @@ public class ImageService {
         try {
             String[] sourceArr = urlLikeStr.split(",");
 
+            String ext = sourceArr[0].replace("data:image/", "")
+                    .replace(";base64", "");
             byte[] decoded = Base64.getDecoder().decode(sourceArr[1]);
             ByteArrayInputStream bis = new ByteArrayInputStream(decoded);
             BufferedImage image = ImageIO.read(bis);
             bis.close();
 
-            fullFilePath = this.execStore(image, folder, identifier, size);
+            fullFilePath = this.execStore(image, ext, folder, identifier, size);
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }

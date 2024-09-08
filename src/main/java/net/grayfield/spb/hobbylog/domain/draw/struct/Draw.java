@@ -11,4 +11,5 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Draw extends BaseSchema {
     private String content;
     private DrawType drawType;
+    private String mainImage;
 }

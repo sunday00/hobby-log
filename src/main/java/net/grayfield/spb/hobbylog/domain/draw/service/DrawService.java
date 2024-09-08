@@ -25,14 +25,13 @@ public class DrawService {
     private final FileSystemService fileSystemService;
     private final DrawRepository drawRepository;
 
-    public String storeThumbnail(DrawInput drawInput, String folder, LocalDateTime logAt) throws FileNotFoundException {
+    public String storeThumbnail(DrawInput drawInput, String folder, LocalDateTime logAt) {
         return this.imageService.storeMainImage(Category.DRAW, folder, drawInput.getThumbnail(), logAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH")));
     }
 
-    public String storeDrawImage(DrawInput drawInput, String folder) throws FileNotFoundException {
+    public String storeDrawImage(DrawInput drawInput, String folder) {
         String id = NanoIdUtils.randomNanoId();
-        String path = this.imageService.storeSubImage(folder, drawInput.getMainImage(), id, 0, 1024);
-        return String.format("<div><img src=\"%s\" alt=\"%s\" class=\"main-image\" /></div>\n", path, drawInput.getTitle());
+        return this.imageService.storeSubImage(folder, drawInput.getMainImage(), id, 0, 1024);
     }
 
     public Draw createDraw(DrawInput drawInput) throws FileNotFoundException {
@@ -41,6 +40,7 @@ public class DrawService {
         LocalDateTime logAt = StaticHelper.generateLogAt(drawInput.getLogAtStr());
         String folder = this.fileSystemService.makeCategoryImageFolder(Category.DRAW, logAt);
         String thumbnail = this.storeThumbnail(drawInput, folder, logAt);
+        String mainImage = this.storeDrawImage(drawInput, folder);
 
         Draw draw = new Draw();
         draw.setUserId(userId);
@@ -49,7 +49,8 @@ public class DrawService {
         draw.setThumbnail(thumbnail);
         draw.setRatings(0);
         draw.setStatus(Status.DRAFT);
-        draw.setContent(this.storeDrawImage(drawInput, folder) + drawInput.getContent());
+        draw.setContent(drawInput.getContent());
+        draw.setMainImage(mainImage);
         draw.setLogAt(logAt);
         draw.setDrawType(drawInput.getDrawType());
 
@@ -71,10 +72,12 @@ public class DrawService {
         LocalDateTime logAt = StaticHelper.generateLogAt(drawInput.getLogAtStr());
         String folder = this.fileSystemService.makeCategoryImageFolder(Category.DRAW, logAt);
         String thumbnail = this.storeThumbnail(drawInput, folder, logAt);
+        String mainImage = this.storeDrawImage(drawInput, folder);
 
         draw.setTitle(drawInput.getTitle());
         draw.setThumbnail(thumbnail);
-        draw.setContent(this.storeDrawImage(drawInput, folder) + drawInput.getContent());
+        draw.setContent(drawInput.getContent());
+        draw.setMainImage(mainImage);
         draw.setDrawType(drawInput.getDrawType());
 
         if(drawInput.getLogAtStr() != null) {

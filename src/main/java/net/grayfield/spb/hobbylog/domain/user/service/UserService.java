@@ -29,12 +29,8 @@ public class UserService {
 
     public User findOneOrCreateByEmail(KakaoMeInfo info) {
         String email = info.getEmail();
-//        if(!email.equals(permittedUserEmail)) {
-//            throw GraphqlErrorException.newErrorException()
-//                    .message("currently only permitted for server master user. sorry")
-//                    .errorClassification(CustomErrorType.UNAUTHORIZED)
-//                    .build();
-//        }
+
+        // TODO BLOCK USER by email
 
         User exists = userRepository.findByEmail(email);
 

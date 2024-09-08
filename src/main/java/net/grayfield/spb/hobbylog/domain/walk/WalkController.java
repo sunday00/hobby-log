@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class WalkController {
     private final WalkService walkService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result createWalkLog(@Argument WalkInput walkInput) {
         try {
@@ -45,7 +45,7 @@ public class WalkController {
         return this.walkService.getOneWalkById(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result updateWalkLog(@Argument WalkInput walkInput) {
         try {

@@ -12,7 +12,7 @@ public class WalkInput {
     private String thumbnail;
 
     private int steps;
-    private int distance;
+    private float distance;
     private int duration;
 
     @Nullable

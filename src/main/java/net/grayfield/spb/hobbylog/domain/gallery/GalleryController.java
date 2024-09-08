@@ -21,7 +21,7 @@ import java.util.Arrays;
 public class GalleryController {
     private final GalleryService galleryService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result createGalleryLog (@Argument GalleryInput galleryInput) throws FileNotFoundException {
         Gallery gallery = this.galleryService.storeGallery(galleryInput);
@@ -34,7 +34,7 @@ public class GalleryController {
         return this.galleryService.getOneGalleryById(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result updateGalleryLog (@Argument GalleryInput galleryInput) {
         try {

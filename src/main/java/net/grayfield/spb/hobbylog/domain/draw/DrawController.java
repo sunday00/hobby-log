@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class DrawController {
     private final DrawService drawService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result createDrawLog(@Argument DrawInput drawInput) {
         try {
@@ -45,7 +45,7 @@ public class DrawController {
         return this.drawService.getOneDrawById(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result updateDrawLog(@Argument DrawInput drawInput) {
         try {

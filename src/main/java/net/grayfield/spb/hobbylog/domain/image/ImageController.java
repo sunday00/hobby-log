@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 public class ImageController {
     private final ImageService imageService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result addSubImage(@Argument AddSubImageInput addSubImageInput)  {
         this.imageService.storeSubImage(

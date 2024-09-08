@@ -11,6 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Walk extends BaseSchema {
     private String content;
     private int steps;
-    private int distance;
+    private float distance;
     private int duration;
 }

@@ -23,7 +23,7 @@ import java.util.List;
 public class CommonController {
     private final CommonService commonService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result updateStatus (@Argument UpdateStatusInput updateStatusInput, GraphQLContext context, DataFetchingEnvironment e) {
         return this.commonService.updateStatus(updateStatusInput);
@@ -34,7 +34,7 @@ public class CommonController {
         return this.commonService.findByMonth(yyyy, mm);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @QueryMapping
     public List<BaseSchema> monthNonActiveHobby (@Argument String yyyy, @Argument String mm) {
         return this.commonService.findNonActiveByMonth(yyyy, mm);
@@ -50,7 +50,7 @@ public class CommonController {
         return this.commonService.searchHobby(search, page);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result deleteLog(@Argument Category category, @Argument String id, @Argument String flag) {
         return this.commonService.deleteOneLog(category, id, flag);

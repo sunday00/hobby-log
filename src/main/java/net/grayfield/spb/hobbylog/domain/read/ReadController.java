@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class ReadController {
     private final ReadService readService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result createReadLog(@Argument ReadInput readInput) {
         try {
@@ -43,7 +43,7 @@ public class ReadController {
         return this.readService.getOneReadById(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result updateReadLog(@Argument ReadInput readInput) {
         try {

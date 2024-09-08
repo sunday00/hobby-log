@@ -27,17 +27,14 @@ public class UserService {
     @Value("${jwt.ttl}")
     private Integer ttl;
 
-    @Value("${tmdb.user_email}")
-    private String permittedUserEmail;
-
     public User findOneOrCreateByEmail(KakaoMeInfo info) {
         String email = info.getEmail();
-        if(!email.equals(permittedUserEmail)) {
-            throw GraphqlErrorException.newErrorException()
-                    .message("currently only permitted for server master user. sorry")
-                    .errorClassification(CustomErrorType.UNAUTHORIZED)
-                    .build();
-        }
+//        if(!email.equals(permittedUserEmail)) {
+//            throw GraphqlErrorException.newErrorException()
+//                    .message("currently only permitted for server master user. sorry")
+//                    .errorClassification(CustomErrorType.UNAUTHORIZED)
+//                    .build();
+//        }
 
         User exists = userRepository.findByEmail(email);
 

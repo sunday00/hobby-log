@@ -13,6 +13,6 @@ type Walk implements BaseSchema {
     status: Status
     content: String
     steps: Int
-    distance: Int
+    distance: Float
     duration: Int
 }

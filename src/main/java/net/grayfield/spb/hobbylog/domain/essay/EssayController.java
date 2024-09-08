@@ -1,6 +1,5 @@
 package net.grayfield.spb.hobbylog.domain.essay;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.essay.service.EssayService;
@@ -23,7 +22,7 @@ import java.util.List;
 public class EssayController {
     private final EssayService essayService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result createEssayLog(@Argument EssayInput essayInput) {
         try {
@@ -51,7 +50,7 @@ public class EssayController {
         return this.essayService.getOneEssayById(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result updateEssayLog(@Argument EssayInput essayInput) {
         try {

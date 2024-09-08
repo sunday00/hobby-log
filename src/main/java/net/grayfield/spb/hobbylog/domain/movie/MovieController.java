@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 public class MovieController {
     private final MovieService movieService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result logMovie (
             @Argument MovieInput movieInput,
@@ -41,7 +41,7 @@ public class MovieController {
         );
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @QueryMapping
     public MovieRawPage searchMovies (
             @Argument String search, @Argument Long page,
@@ -58,7 +58,7 @@ public class MovieController {
         return this.movieService.getOneMovie(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_WRITER')")
     @MutationMapping
     public Result updateMovie (
             @Argument MovieInput movieInput,

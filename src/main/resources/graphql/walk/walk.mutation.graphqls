@@ -11,6 +11,6 @@ input WalkInput {
     logAtStr: String
     status: Status
     steps: Int
-    distance: Int
+    distance: Float
     duration: Int
 }

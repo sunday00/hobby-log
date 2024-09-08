@@ -124,8 +124,6 @@ public class HobbyTemplateRepository {
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
 
-        log.info("results: {}", results.getMappedResults());
-
         return results.getMappedResults();
     }
 
@@ -156,8 +154,6 @@ public class HobbyTemplateRepository {
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
 
-        log.info("results: {}", results.getMappedResults());
-
         return results.getMappedResults();
     }
 
@@ -182,8 +178,6 @@ public class HobbyTemplateRepository {
         );
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, category.toString().toLowerCase(), BaseSchema.class);
-
-        log.info("results: {}", results.getMappedResults());
 
         return results.getMappedResults();
     }
@@ -212,8 +206,6 @@ public class HobbyTemplateRepository {
         );
 
         AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
-
-        log.info("results: {}", results.getMappedResults());
 
         return results.getMappedResults();
     }

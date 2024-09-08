@@ -10,21 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.aop.catcher.SignWithOtherException;
 import net.grayfield.spb.hobbylog.domain.auth.service.JwtService;
-import net.grayfield.spb.hobbylog.domain.user.service.UserService;
-import net.grayfield.spb.hobbylog.domain.user.struct.Role;
-import net.grayfield.spb.hobbylog.domain.user.struct.User;
-import net.grayfield.spb.hobbylog.domain.user.struct.UserAuthentication;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlResponse;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -32,19 +25,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
     private final JwtService jwtService;
-    private final UserService userService;
 
     @Override
     @NonNull
     public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, @NotNull Chain chain) {
         AtomicReference<Boolean> isDocumentHasSignPath = new AtomicReference<>(false);
-        AtomicReference<Boolean> isAllowGuestPath = new AtomicReference<>(false);
         AtomicReference<Integer> selectionSetSize = new AtomicReference<>(0);
         AtomicReference<SourceLocation> signLocation = new AtomicReference<>(SourceLocation.EMPTY);
-
-        if(Objects.equals(request.getOperationName(), "IntrospectionQuery")) {
-            isAllowGuestPath.set(true);
-        }
 
         Document doc = Parser.parse(request.getDocument());
         doc.getDefinitions().forEach(d -> {
@@ -67,44 +54,11 @@ public class PreRequestJwtInterceptor implements WebGraphQlInterceptor {
                 .doFirst(() -> {
                     if ((doc.getDefinitions().size() > 1 || selectionSetSize.get() > 1) && Boolean.TRUE.equals(isDocumentHasSignPath.get())) {
                         throw new SignWithOtherException("Sign method should triggered Alone.");
-                    } else if (doc.getDefinitions().size() == 1 && (Boolean.TRUE.equals(isDocumentHasSignPath.get()))) {
-                        return;
-                    } else if (Boolean.TRUE.equals(isAllowGuestPath.get()) || request.getUri().toString().startsWith("/upload")) {
-                        return;
-                    }
-
-                    String jwtToken;
-
-                    try {
-                        jwtToken = Objects.requireNonNull(request.getHeaders()
-                                .getFirst("Authorization"))
-                                .replaceFirst("[b|B]earer ", "");
-
-                        String userId = this.jwtService.getUserIdFromJwtToken(jwtToken);
-
-                        User user = this.userService.createUserSessionById(userId);
-
-                        UserAuthentication authentication = new UserAuthentication(user);
-                        authentication.setAuthenticated(true);
-
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    } catch (Exception ex) {
-//                        throw new AuthenticationCredentialsNotFoundException("NoJwtHeader");
-                        User user = new User();
-                        user.setRoles(List.of(Role.ROLE_GUEST));
-
-                        UserAuthentication authentication = new UserAuthentication(user);
-                        authentication.setAuthenticated(true);
-
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 })
                 .onErrorResume(SignWithOtherException.class, ex ->
                     this.jwtService.errorResult(request, ex, "sign", signLocation.get())
                 )
-//                .onErrorResume(AuthenticationCredentialsNotFoundException.class, ex ->
-//                    this.jwtService.errorResult(request, ex, "sign", signLocation.get())
-//                )
                 .onErrorResume(Exception.class, ex ->
                     this.jwtService.errorResult(request, ex, null, signLocation.get())
                 );

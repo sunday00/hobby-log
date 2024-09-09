@@ -9,6 +9,7 @@ import net.grayfield.spb.hobbylog.domain.share.struct.*;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
@@ -43,8 +44,8 @@ public class CommonController {
     }
 
     @QueryMapping
-    public SearchPagination searchHobby(@Argument String search, @Argument Long page) {
-        return this.commonService.searchHobby(search, page);
+    public SearchPagination searchHobby(@Argument String search, @Argument Long page, @Nullable @Argument Category category) {
+        return this.commonService.searchHobby(search, page, category);
     }
 
     @PreAuthorize("hasRole('ROLE_WRITER')")

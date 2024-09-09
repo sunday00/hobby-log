@@ -7,6 +7,7 @@ import net.grayfield.spb.hobbylog.domain.essay.struct.Essay;
 import net.grayfield.spb.hobbylog.domain.movie.service.MovieService;
 import net.grayfield.spb.hobbylog.domain.share.repository.HobbyTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.share.struct.*;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -86,13 +87,13 @@ public class CommonService {
         }
     }
 
-    public SearchPagination searchHobby(String search, Long page) {
+    public SearchPagination searchHobby(String search, Long page, @Nullable Category category) {
         try {
             // TODO:
             // add only mine
             // add only my followed user
             // currently working all people logs
-            SearchPagination results = this.hobbyTemplateRepository.searchHobby(search, page);
+            SearchPagination results = this.hobbyTemplateRepository.searchHobby(search, page, category);
 
             results.setHobbies(results.getHobbies().stream().map(hobby -> {
                 if(hobby.getCategory() == Category.ESSAY) {

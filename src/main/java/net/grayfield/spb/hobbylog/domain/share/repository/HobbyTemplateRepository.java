@@ -10,21 +10,20 @@ import net.grayfield.spb.hobbylog.domain.read.struct.Read;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.SearchPagination;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
 import net.grayfield.spb.hobbylog.domain.walk.struct.Walk;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.UnionWithOperation;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -182,7 +181,7 @@ public class HobbyTemplateRepository {
         return results.getMappedResults();
     }
 
-    public List<BaseSchema> searchHobby(String search, Long page) {
+    public SearchPagination searchHobby(String search, Long page) {
         Criteria criteria = new Criteria()
                 .andOperator(
                         Criteria.where("status").is(Status.ACTIVE),
@@ -193,21 +192,31 @@ public class HobbyTemplateRepository {
                 );
 
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status"),
                 UnionWithOperation.unionWith("movie"),
+                UnionWithOperation.unionWith("gallery"),
                 UnionWithOperation.unionWith("walk"),
                 UnionWithOperation.unionWith("draw"),
                 UnionWithOperation.unionWith("read"),
                 UnionWithOperation.unionWith("essay"),
-                Aggregation.match(criteria),
-                Aggregation.skip((page - 1) * 20),
-                Aggregation.limit(20),
-                Aggregation.sort(Sort.Direction.DESC, "logAt")
+                Aggregation.facet(
+                        Aggregation.match(criteria),
+                        Aggregation.sort(Sort.Direction.DESC, "logAt"),
+                        Aggregation.skip((page - 1) * 20),
+                        Aggregation.limit(20),
+                        Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status")
+//                        Aggregation.project("id", "category")
+                ).as("hobbies").and(
+                    Aggregation.match(criteria),
+                    Aggregation.count().as("totalCount")
+                ).as("totalCount"),
+
+                Aggregation.unwind("totalCount"),
+                Aggregation.project("hobbies").and("totalCount.totalCount").as("totalCount")
         );
 
-        AggregationResults<BaseSchema> results = mongoTemplate.aggregate(aggregation, "gallery", BaseSchema.class);
+        AggregationResults<SearchPagination> results = mongoTemplate.aggregate(aggregation, "user", SearchPagination.class);
 
-        return results.getMappedResults();
+        return results.getMappedResults().getFirst();
     }
 
     public BaseSchema deleteOneHobby(Category category, String id) {

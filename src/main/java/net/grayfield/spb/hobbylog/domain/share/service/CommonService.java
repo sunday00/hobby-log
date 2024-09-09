@@ -6,14 +6,12 @@ import net.grayfield.spb.hobbylog.domain.essay.service.EssayService;
 import net.grayfield.spb.hobbylog.domain.essay.struct.Essay;
 import net.grayfield.spb.hobbylog.domain.movie.service.MovieService;
 import net.grayfield.spb.hobbylog.domain.share.repository.HobbyTemplateRepository;
-import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
-import net.grayfield.spb.hobbylog.domain.share.struct.Category;
-import net.grayfield.spb.hobbylog.domain.share.struct.Result;
-import net.grayfield.spb.hobbylog.domain.share.struct.UpdateStatusInput;
+import net.grayfield.spb.hobbylog.domain.share.struct.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -88,32 +86,39 @@ public class CommonService {
         }
     }
 
-    public List<BaseSchema> searchHobby(String search, Long page) {
+    public SearchPagination searchHobby(String search, Long page) {
         try {
             // TODO:
             // add only mine
             // add only my followed user
             // currently working all people logs
-            List<BaseSchema> hobbies = this.hobbyTemplateRepository.searchHobby(search, page);
-            return hobbies.stream().map(hobby -> {
+            SearchPagination results = this.hobbyTemplateRepository.searchHobby(search, page);
+
+            results.setHobbies(results.getHobbies().stream().map(hobby -> {
                 if(hobby.getCategory() == Category.ESSAY) {
                     Essay essay = (Essay) hobby;
 
                     essay.setTitle(
                             essay.getSeriesName() != null
-                                ? "[" + essay.getSeriesName() + "] " + essay.getTitle()
-                                : essay.getTitle()
+                                    ? "[" + essay.getSeriesName() + "] " + essay.getTitle()
+                                    : essay.getTitle()
                     );
 
                     return essay;
                 }
 
                 return hobby;
-            }).toList();
+            }).toList());
+
+            return results;
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             log.error("{}", Arrays.stream(ex.getStackTrace()).toList());
-            return List.of();
+            SearchPagination result = new SearchPagination();
+            result.setHobbies(List.of());
+            result.setTotalCount(0L);
+
+            return result;
         }
     }
 

@@ -5,10 +5,7 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.share.service.CommonService;
-import net.grayfield.spb.hobbylog.domain.share.struct.BaseSchema;
-import net.grayfield.spb.hobbylog.domain.share.struct.Category;
-import net.grayfield.spb.hobbylog.domain.share.struct.Result;
-import net.grayfield.spb.hobbylog.domain.share.struct.UpdateStatusInput;
+import net.grayfield.spb.hobbylog.domain.share.struct.*;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -46,7 +43,7 @@ public class CommonController {
     }
 
     @QueryMapping
-    public List<BaseSchema> searchHobby(@Argument String search, @Argument Long page) {
+    public SearchPagination searchHobby(@Argument String search, @Argument Long page) {
         return this.commonService.searchHobby(search, page);
     }
 

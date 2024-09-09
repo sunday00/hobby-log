@@ -187,8 +187,8 @@ public class HobbyTemplateRepository {
                 .andOperator(
                         Criteria.where("status").is(Status.ACTIVE),
                         new Criteria().orOperator(
-                            Criteria.where("title").regex(search),
-                            Criteria.where("seriesName").regex(search)
+                            Criteria.where("title").regex(search, "i"),
+                            Criteria.where("seriesName").regex(search, "i")
                         )
                 );
 

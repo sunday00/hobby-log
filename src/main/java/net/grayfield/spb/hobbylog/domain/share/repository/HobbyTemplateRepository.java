@@ -22,8 +22,11 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Repository
@@ -181,7 +184,7 @@ public class HobbyTemplateRepository {
         return results.getMappedResults();
     }
 
-    public SearchPagination searchHobby(String search, Long page) {
+    public SearchPagination searchHobby(String search, Long page, @Nullable Category category) {
         Criteria criteria = new Criteria()
                 .andOperator(
                         Criteria.where("status").is(Status.ACTIVE),
@@ -191,28 +194,39 @@ public class HobbyTemplateRepository {
                         )
                 );
 
-        Aggregation aggregation = Aggregation.newAggregation(
+        FacetOperation facetOperation = Aggregation.facet(
+                Aggregation.match(criteria),
+                Aggregation.sort(Sort.Direction.DESC, "logAt"),
+                Aggregation.skip((page - 1) * 20),
+                Aggregation.limit(20),
+                Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status")
+        ).as("hobbies").and(
+                Aggregation.match(criteria),
+                Aggregation.count().as("totalCount")
+        ).as("totalCount");
+
+        List<AggregationOperation> aggList;
+
+        if(category == null) {
+            aggList = new ArrayList<>(List.of(
                 UnionWithOperation.unionWith("movie"),
                 UnionWithOperation.unionWith("gallery"),
                 UnionWithOperation.unionWith("walk"),
                 UnionWithOperation.unionWith("draw"),
                 UnionWithOperation.unionWith("read"),
-                UnionWithOperation.unionWith("essay"),
-                Aggregation.facet(
-                        Aggregation.match(criteria),
-                        Aggregation.sort(Sort.Direction.DESC, "logAt"),
-                        Aggregation.skip((page - 1) * 20),
-                        Aggregation.limit(20),
-                        Aggregation.project("id", "userId", "title", "category", "seriesName", "thumbnail", "ratings",  "logAt", "status")
-//                        Aggregation.project("id", "category")
-                ).as("hobbies").and(
-                    Aggregation.match(criteria),
-                    Aggregation.count().as("totalCount")
-                ).as("totalCount"),
+                UnionWithOperation.unionWith("essay")
+            ));
+        } else {
+            aggList = new ArrayList<>(List.of(
+                UnionWithOperation.unionWith(category.toString().toLowerCase())
+            ));
+        }
 
-                Aggregation.unwind("totalCount"),
-                Aggregation.project("hobbies").and("totalCount.totalCount").as("totalCount")
-        );
+        aggList.add(facetOperation);
+        aggList.add(Aggregation.unwind("totalCount"));
+        aggList.add(Aggregation.project("hobbies").and("totalCount.totalCount").as("totalCount"));
+
+        Aggregation aggregation = Aggregation.newAggregation(aggList);
 
         AggregationResults<SearchPagination> results = mongoTemplate.aggregate(aggregation, "user", SearchPagination.class);
 

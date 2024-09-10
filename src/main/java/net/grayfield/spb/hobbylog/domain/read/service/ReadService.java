@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.read.service;
 
+import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -55,8 +57,14 @@ public class ReadService {
         return stored;
     }
 
-    public Read getOneReadById(String id) {
-        return this.readRepository.findById(id).orElseThrow();
+    public Read getOneReadById(String id, List<SelectedField> selectedFields) {
+        Read read = this.readRepository.findById(id).orElseThrow();
+
+        if(!selectedFields.isEmpty()) {
+            read.setSubImages(this.imageService.getAllSubImagesByMainId(read.getId()));
+        }
+
+        return read;
     }
 
     public Read getOneReadById(String id, String userId) {

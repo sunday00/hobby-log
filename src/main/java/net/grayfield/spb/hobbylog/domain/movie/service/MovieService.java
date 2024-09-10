@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.movie.service;
 
+import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
@@ -196,8 +197,14 @@ public class MovieService {
             ;
     }
 
-    public Movie getOneMovie(String id) {
-        return this.movieRepository.findMovieById(id).orElseThrow();
+    public Movie getOneMovie(String id, List<SelectedField> selectedFields) {
+        Movie movie = this.movieRepository.findMovieById(id).orElseThrow();
+
+        if(!selectedFields.isEmpty()) {
+            movie.setSubImages(this.imageService.getAllSubImagesByMainId(movie.getId()));
+        }
+
+        return movie;
     }
 
     public Movie getOneMovie(String id, String userId) {

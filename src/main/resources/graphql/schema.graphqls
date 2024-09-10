@@ -16,6 +16,19 @@ enum Status {
     DEPRECATED,
 }
 
+enum UsedAs {
+    MAIN
+    SUB
+}
+
+type ImageEntity {
+    id: String
+    path: String
+    usedBy: String
+    usedAs: UsedAs
+    flag: String
+}
+
 interface BaseSchema {
     id: String
     userId: String
@@ -25,6 +38,7 @@ interface BaseSchema {
     ratings: Int
     logAt: DateTime
     status: Status
+    subImages: [ImageEntity]
 }
 
 type Result {
@@ -43,4 +57,5 @@ type Hobby implements BaseSchema {
     ratings: Int
     logAt: DateTime
     status: Status
+    subImages: [ImageEntity]
 }

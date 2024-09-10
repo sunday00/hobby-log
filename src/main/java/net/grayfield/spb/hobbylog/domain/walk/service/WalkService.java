@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.walk.service;
 
+import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -55,8 +57,14 @@ public class WalkService {
         return stored;
     }
 
-    public Walk getOneWalkById(String id) {
-        return this.walkRepository.findById(id).orElseThrow();
+    public Walk getOneWalkById(String id, List<SelectedField> selectedFields) {
+        Walk walk = this.walkRepository.findById(id).orElseThrow();
+
+        if(!selectedFields.isEmpty()) {
+            walk.setSubImages(this.imageService.getAllSubImagesByMainId(walk.getId()));
+        }
+
+        return walk;
     }
 
     public Walk getOneWalkById(String id, String userId) {

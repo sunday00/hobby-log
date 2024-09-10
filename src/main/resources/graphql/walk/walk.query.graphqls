@@ -15,4 +15,5 @@ type Walk implements BaseSchema {
     steps: Int
     distance: Float
     duration: Int
+    subImages: [ImageEntity]
 }

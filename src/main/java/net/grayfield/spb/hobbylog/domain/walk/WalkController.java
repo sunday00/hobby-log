@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.walk;
 
+import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
@@ -41,8 +42,8 @@ public class WalkController {
     }
 
     @QueryMapping
-    public Walk getOneWalk(@Argument String id) {
-        return this.walkService.getOneWalkById(id);
+    public Walk getOneWalk(@Argument String id, DataFetchingEnvironment e) {
+        return this.walkService.getOneWalkById(id, e.getSelectionSet().getFields("subImages"));
     }
 
     @PreAuthorize("hasRole('ROLE_WRITER')")

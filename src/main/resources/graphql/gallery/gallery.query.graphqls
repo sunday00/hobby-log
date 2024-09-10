@@ -23,4 +23,5 @@ type Gallery implements BaseSchema {
     ratings: Int
     logAt: DateTime
     status: Status
+    subImages: [ImageEntity]
 }

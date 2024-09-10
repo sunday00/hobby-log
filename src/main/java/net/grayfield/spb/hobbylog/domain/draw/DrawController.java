@@ -1,5 +1,9 @@
 package net.grayfield.spb.hobbylog.domain.draw;
 
+import graphql.GraphQLContext;
+import graphql.language.Field;
+import graphql.schema.DataFetchingEnvironment;
+import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.draw.service.DrawService;
@@ -41,8 +45,8 @@ public class DrawController {
     }
 
     @QueryMapping
-    public Draw getOneDraw(@Argument String id) {
-        return this.drawService.getOneDrawById(id);
+    public Draw getOneDraw(@Argument String id, DataFetchingEnvironment e) {
+        return this.drawService.getOneDrawById(id, e.getSelectionSet().getFields("subImages"));
     }
 
     @PreAuthorize("hasRole('ROLE_WRITER')")

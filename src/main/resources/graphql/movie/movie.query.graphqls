@@ -58,6 +58,7 @@ type Movie implements BaseSchema {
     runtime: Int
     tagline: String
     originalTagline: String
+    subImages: [ImageEntity]
 }
 
 type Crew {

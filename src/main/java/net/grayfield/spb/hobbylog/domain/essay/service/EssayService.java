@@ -1,6 +1,7 @@
 package net.grayfield.spb.hobbylog.domain.essay.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.essay.repository.EssayRepository;
@@ -80,8 +81,14 @@ public class EssayService {
         return this.essayTemplateRepository.getSeriesListByKeyword(search);
     }
 
-    public Essay getOneEssayById(String id) {
-        return this.essayTemplateRepository.getOneEssayByIdWithSeries(id);
+    public Essay getOneEssayById(String id, List<SelectedField> selectedFields) {
+        Essay essay = this.essayTemplateRepository.getOneEssayByIdWithSeries(id);
+
+        if(!selectedFields.isEmpty()) {
+            essay.setSubImages(this.imageService.getAllSubImagesByMainId(essay.getId()));
+        }
+
+        return essay;
     }
 
     public Essay getOneEssayById(String id, String userId) {
@@ -130,7 +137,9 @@ public class EssayService {
     }
 
     public Result deleteSeries(String id) {
-        Essay essay = this.getOneEssayById(id);
+        String userId = StaticHelper.getUserId();
+
+        Essay essay = this.getOneEssayById(id, userId);
 
         if (essay.getId().equals(essay.getSeriesKey())) {
             this.essayRepository.deleteAllBySeriesKey(id);

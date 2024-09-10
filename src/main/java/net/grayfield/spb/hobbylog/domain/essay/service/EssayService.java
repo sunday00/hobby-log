@@ -10,6 +10,7 @@ import net.grayfield.spb.hobbylog.domain.essay.struct.EssayInput;
 import net.grayfield.spb.hobbylog.domain.essay.struct.Series;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
@@ -70,6 +71,7 @@ public class EssayService {
             stored.setSeriesKey(stored.getId());
             stored = this.essayRepository.save(stored);
         }
+        imageService.storeToDatabase(thumbnail, stored.getId(), ImageUsedAs.MAIN, null);
 
         return stored;
     }
@@ -122,6 +124,7 @@ public class EssayService {
         }
 
         this.essayRepository.save(essay);
+        this.imageService.updateToDatabase(thumbnail, essay.getId(), null);
 
         return essay;
     }

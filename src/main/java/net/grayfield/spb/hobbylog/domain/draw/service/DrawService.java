@@ -7,6 +7,7 @@ import net.grayfield.spb.hobbylog.domain.draw.repository.DrawRepository;
 import net.grayfield.spb.hobbylog.domain.draw.struct.Draw;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
@@ -54,7 +55,11 @@ public class DrawService {
         draw.setLogAt(logAt);
         draw.setDrawType(drawInput.getDrawType());
 
-        return this.drawRepository.save(draw);
+        Draw stored = this.drawRepository.save(draw);
+        this.imageService.storeToDatabase(thumbnail, stored.getId(), ImageUsedAs.MAIN, "thumbnail");
+        this.imageService.storeToDatabase(mainImage, stored.getId(), ImageUsedAs.MAIN, "body");
+
+        return stored;
     }
 
     public Draw getOneDrawById(String id) {
@@ -89,6 +94,8 @@ public class DrawService {
         }
 
         this.drawRepository.save(draw);
+        this.imageService.updateToDatabase(thumbnail, draw.getId(), "thumbnail");
+        this.imageService.updateToDatabase(mainImage, draw.getId(), "body");
 
         return draw;
     }

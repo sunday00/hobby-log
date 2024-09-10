@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.read.repository.ReadRepository;
 import net.grayfield.spb.hobbylog.domain.read.struct.Read;
 import net.grayfield.spb.hobbylog.domain.read.struct.ReadInput;
@@ -48,7 +49,10 @@ public class ReadService {
         read.setReadType(readInput.getReadType());
         read.setLogAt(logAt);
 
-        return this.readRepository.save(read);
+        Read stored = this.readRepository.save(read);
+        this.imageService.storeToDatabase(thumbnail, stored.getId(), ImageUsedAs.MAIN, null);
+
+        return stored;
     }
 
     public Read getOneReadById(String id) {
@@ -83,6 +87,7 @@ public class ReadService {
         }
 
         this.readRepository.save(read);
+        this.imageService.updateToDatabase(thumbnail, read.getId(), null);
 
         return read;
     }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieRepository;
 import net.grayfield.spb.hobbylog.domain.movie.repository.MovieTemplateRepository;
 import net.grayfield.spb.hobbylog.domain.movie.struct.*;
@@ -160,6 +161,7 @@ public class MovieService {
             movie.setLogAt(StaticHelper.generateLogAt(movieInput.getLogAtStr()));
 
             String resultId = this.movieTemplateRepository.upsertMovie(movie);
+            this.imageService.storeToDatabase(localPosterImage, resultId, ImageUsedAs.MAIN, null);
 
             return Result.builder().id(resultId).success(true).build();
         } catch (Exception ex) {

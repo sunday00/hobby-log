@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
@@ -48,7 +49,10 @@ public class WalkService {
         walk.setDistance(walkInput.getDistance());
         walk.setDuration(walkInput.getDuration());
 
-        return this.walkRepository.save(walk);
+        Walk stored = this.walkRepository.save(walk);
+        this.imageService.storeToDatabase(thumbnail, walk.getId(), ImageUsedAs.MAIN, null);
+
+        return stored;
     }
 
     public Walk getOneWalkById(String id) {
@@ -82,6 +86,7 @@ public class WalkService {
         }
 
         this.walkRepository.save(walk);
+        this.imageService.updateToDatabase(thumbnail, walk.getId(), null);
 
         return walk;
     }

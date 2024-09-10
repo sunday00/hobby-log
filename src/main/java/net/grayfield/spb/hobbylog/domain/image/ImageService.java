@@ -2,9 +2,13 @@ package net.grayfield.spb.hobbylog.domain.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.domain.image.repository.ImageRepository;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageEntity;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -20,6 +24,7 @@ import java.net.URL;
 import java.nio.file.FileSystems;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,6 +35,8 @@ public class ImageService {
 
     @Value("${storage.path}")
     private String storagePath;
+
+    private final ImageRepository imageRepository;
 
     private String classPath() throws FileNotFoundException {
         if(env.equals("default")) return ResourceUtils.getFile("classpath:static").toString();
@@ -51,6 +58,37 @@ public class ImageService {
         graphics2D.dispose();
 
         return outputImage;
+    }
+
+    public String storeToDatabase (String path, String usedBy, ImageUsedAs usedAs, @Nullable String flag) {
+        ImageEntity image = new ImageEntity();
+        image.setPath(path);
+        image.setUsedBy(usedBy);
+        image.setUsedAs(usedAs);
+
+        if(flag != null) { image.setFlag(flag);}
+
+        ImageEntity stored = this.imageRepository.save(image);
+
+        return stored.getId();
+    }
+
+    public String updateToDatabase (String path, String usedBy, @Nullable String flag) {
+        Optional<ImageEntity> image;
+
+        if(flag == null) {
+            image = this.imageRepository.findOneImageEntityByUsedBy(usedBy);
+        } else {
+            image = this.imageRepository.findOneImageEntityByUsedByAndFlag(usedBy, flag);
+        }
+
+        if(image.isEmpty()) return null;
+
+        ImageEntity imageEntity = image.get();
+        imageEntity.setPath(path);
+        this.imageRepository.save(imageEntity);
+
+        return imageEntity.getId();
     }
 
     public String execStore(BufferedImage image, String ext, String folder, String identifier, int size) throws IOException {

@@ -8,6 +8,7 @@ import net.grayfield.spb.hobbylog.domain.gallery.struct.Gallery;
 import net.grayfield.spb.hobbylog.domain.gallery.struct.GalleryInput;
 import net.grayfield.spb.hobbylog.domain.image.FileSystemService;
 import net.grayfield.spb.hobbylog.domain.image.ImageService;
+import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Status;
@@ -47,8 +48,8 @@ public class GalleryService {
         gallery.setLogAt(logAt);
 
         String updateResultId = this.galleryTemplateRepository.upsertGallery(gallery);
-
         gallery.setId(updateResultId);
+        imageService.storeToDatabase(thumbnail, updateResultId, ImageUsedAs.MAIN, null);
 
         return gallery;
     }
@@ -85,6 +86,7 @@ public class GalleryService {
         }
 
         this.galleryRepository.save(gallery);
+        this.imageService.updateToDatabase(thumbnail, gallery.getId(), null);
 
         return gallery;
     }

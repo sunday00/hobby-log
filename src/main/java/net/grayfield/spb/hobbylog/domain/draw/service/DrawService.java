@@ -1,6 +1,7 @@
 package net.grayfield.spb.hobbylog.domain.draw.service;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.draw.repository.DrawRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -62,8 +64,14 @@ public class DrawService {
         return stored;
     }
 
-    public Draw getOneDrawById(String id) {
-        return this.drawRepository.findById(id).orElseThrow();
+    public Draw getOneDrawById(String id, List<SelectedField> selectedFields) {
+        Draw draw = this.drawRepository.findById(id).orElseThrow();
+
+        if(!selectedFields.isEmpty()) {
+            draw.setSubImages(this.imageService.getAllSubImagesByMainId(draw.getId()));
+        }
+
+        return draw;
     }
 
     public Draw getOneDrawById(String id, String userId) {

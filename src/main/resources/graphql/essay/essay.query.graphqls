@@ -34,4 +34,5 @@ type Essay implements BaseSchema {
     seriesKey: String
     seriesName: String
     series: [Series]
+    subImages: [ImageEntity]
 }

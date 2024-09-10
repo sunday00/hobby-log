@@ -22,4 +22,5 @@ type Read implements BaseSchema {
     overview: String
     content: String
     readType: ReadType
+    subImages: [ImageEntity]
 }

@@ -55,7 +55,7 @@ public class MovieController {
             @Argument String id,
             GraphQLContext context, DataFetchingEnvironment e
     ) {
-        return this.movieService.getOneMovie(id);
+        return this.movieService.getOneMovie(id, e.getSelectionSet().getFields("subImages"));
     }
 
     @PreAuthorize("hasRole('ROLE_WRITER')")

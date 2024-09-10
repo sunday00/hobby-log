@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.essay;
 
+import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.essay.service.EssayService;
@@ -46,8 +47,8 @@ public class EssayController {
     }
 
     @QueryMapping
-    public Essay getOneEssay(@Argument String id) {
-        return this.essayService.getOneEssayById(id);
+    public Essay getOneEssay(@Argument String id, DataFetchingEnvironment e) {
+        return this.essayService.getOneEssayById(id, e.getSelectionSet().getFields("subImages"));
     }
 
     @PreAuthorize("hasRole('ROLE_WRITER')")

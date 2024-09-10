@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.gallery;
 
+import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.gallery.service.GalleryService;
@@ -30,8 +31,8 @@ public class GalleryController {
     }
 
     @QueryMapping
-    public Gallery getOneGallery (@Argument String id) {
-        return this.galleryService.getOneGalleryById(id);
+    public Gallery getOneGallery (@Argument String id, DataFetchingEnvironment e) {
+        return this.galleryService.getOneGalleryById(id, e.getSelectionSet().getFields("subImages"));
     }
 
     @PreAuthorize("hasRole('ROLE_WRITER')")

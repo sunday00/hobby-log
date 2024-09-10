@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.read;
 
+import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.read.service.ReadService;
@@ -39,8 +40,8 @@ public class ReadController {
     }
 
     @QueryMapping
-    public Read getOneRead(@Argument String id) {
-        return this.readService.getOneReadById(id);
+    public Read getOneRead(@Argument String id, DataFetchingEnvironment e) {
+        return this.readService.getOneReadById(id, e.getSelectionSet().getFields("subImages"));
     }
 
     @PreAuthorize("hasRole('ROLE_WRITER')")

@@ -14,4 +14,5 @@ type Draw implements BaseSchema {
     content: String
     mainImage: String
     drawType: DrawType
+    subImages: [ImageEntity]
 }

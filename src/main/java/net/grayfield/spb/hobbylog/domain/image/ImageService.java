@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystems;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -197,5 +198,8 @@ public class ImageService {
         return fullFilePath;
     }
 
+    public List<ImageEntity> getAllSubImagesByMainId(String mainId) {
+        return this.imageRepository.findAllByUsedByAndUsedAs(mainId, ImageUsedAs.SUB);
+    }
 
 }

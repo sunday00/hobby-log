@@ -1,5 +1,6 @@
 package net.grayfield.spb.hobbylog.domain.gallery.service;
 
+import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.grayfield.spb.hobbylog.domain.gallery.repository.GalleryRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -54,8 +56,14 @@ public class GalleryService {
         return gallery;
     }
 
-    public Gallery getOneGalleryById(String id) {
-        return this.galleryRepository.findGalleryById(id).orElseThrow();
+    public Gallery getOneGalleryById(String id, List<SelectedField> selectedFields) {
+        Gallery gallery = this.galleryRepository.findGalleryById(id).orElseThrow();
+
+        if(!selectedFields.isEmpty()) {
+            gallery.setSubImages(this.imageService.getAllSubImagesByMainId(gallery.getId()));
+        }
+
+        return gallery;
     }
 
     public Gallery getOneGalleryById(String id, String userId) {

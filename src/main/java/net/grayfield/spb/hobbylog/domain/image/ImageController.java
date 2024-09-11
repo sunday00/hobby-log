@@ -38,6 +38,6 @@ public class ImageController {
 
         this.imageService.storeToDatabase(path, addSubImageInput.getId(), ImageUsedAs.SUB, addSubImageInput.getSubId() + "");
 
-        return Result.builder().id(addSubImageInput.getId()).success(true).build();
+        return Result.builder().id(addSubImageInput.getId()).success(true).message(path).build();
     }
 }

@@ -1,6 +1,5 @@
 package net.grayfield.spb.hobbylog.domain.essay.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,7 +32,7 @@ public class EssayService {
     private final EssayTemplateRepository essayTemplateRepository;
 
     public String storeThumbnail(EssayInput essayInput, LocalDateTime logAt) throws FileNotFoundException {
-        if(essayInput.getThumbnail() == null) { return null; }
+        if(essayInput.getThumbnail() == null || essayInput.getThumbnail().isEmpty()) { return null; }
         String folder = this.fileSystemService.makeCategoryImageFolder(Category.ESSAY, logAt);
         return this.imageService.storeMainImage(Category.ESSAY, folder, essayInput.getThumbnail(), logAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HH")));
     }
@@ -72,7 +70,7 @@ public class EssayService {
             stored.setSeriesKey(stored.getId());
             stored = this.essayRepository.save(stored);
         }
-        imageService.storeToDatabase(thumbnail, stored.getId(), ImageUsedAs.MAIN, null);
+        imageService.storeToDatabase(thumbnail, stored.getId(), ImageUsedAs.MAIN, "thumbnail");
 
         return stored;
     }
@@ -131,7 +129,7 @@ public class EssayService {
         }
 
         this.essayRepository.save(essay);
-        this.imageService.updateToDatabase(thumbnail, essay.getId(), null);
+        this.imageService.updateToDatabase(thumbnail, essay.getId(), "thumbnail");
 
         return essay;
     }

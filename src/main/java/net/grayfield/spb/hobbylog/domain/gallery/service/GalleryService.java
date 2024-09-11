@@ -51,7 +51,7 @@ public class GalleryService {
 
         String updateResultId = this.galleryTemplateRepository.upsertGallery(gallery);
         gallery.setId(updateResultId);
-        imageService.storeToDatabase(thumbnail, updateResultId, ImageUsedAs.MAIN, null);
+        imageService.storeToDatabase(thumbnail, updateResultId, ImageUsedAs.MAIN, "thumbnail");
 
         return gallery;
     }
@@ -94,7 +94,7 @@ public class GalleryService {
         }
 
         this.galleryRepository.save(gallery);
-        this.imageService.updateToDatabase(thumbnail, gallery.getId(), null);
+        this.imageService.updateToDatabase(thumbnail, gallery.getId(), "thumbnail");
 
         return gallery;
     }

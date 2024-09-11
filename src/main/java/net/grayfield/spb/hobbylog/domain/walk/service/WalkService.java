@@ -52,7 +52,7 @@ public class WalkService {
         walk.setDuration(walkInput.getDuration());
 
         Walk stored = this.walkRepository.save(walk);
-        this.imageService.storeToDatabase(thumbnail, walk.getId(), ImageUsedAs.MAIN, null);
+        this.imageService.storeToDatabase(thumbnail, walk.getId(), ImageUsedAs.MAIN, "thumbnail");
 
         return stored;
     }
@@ -94,7 +94,7 @@ public class WalkService {
         }
 
         this.walkRepository.save(walk);
-        this.imageService.updateToDatabase(thumbnail, walk.getId(), null);
+        this.imageService.updateToDatabase(thumbnail, walk.getId(), "thumbnail");
 
         return walk;
     }

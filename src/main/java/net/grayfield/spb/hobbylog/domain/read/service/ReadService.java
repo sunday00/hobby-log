@@ -52,7 +52,7 @@ public class ReadService {
         read.setLogAt(logAt);
 
         Read stored = this.readRepository.save(read);
-        this.imageService.storeToDatabase(thumbnail, stored.getId(), ImageUsedAs.MAIN, null);
+        this.imageService.storeToDatabase(thumbnail, stored.getId(), ImageUsedAs.MAIN, "thumbnail");
 
         return stored;
     }
@@ -95,7 +95,7 @@ public class ReadService {
         }
 
         this.readRepository.save(read);
-        this.imageService.updateToDatabase(thumbnail, read.getId(), null);
+        this.imageService.updateToDatabase(thumbnail, read.getId(), "thumbnail");
 
         return read;
     }

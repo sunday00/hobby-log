@@ -4,8 +4,9 @@ extend type Mutation {
 
 input AddSubImageInput {
     id: String,
-    folder: String,
+    category: Category,
     url: String,
+    logAtStr: String
     subId: Int,
     width: Int
 }

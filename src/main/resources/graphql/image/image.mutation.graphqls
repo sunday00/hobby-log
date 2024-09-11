@@ -1,5 +1,6 @@
 extend type Mutation {
     addSubImage(addSubImageInput: AddSubImageInput): Result
+    deleteImage(path: String): Result
 }
 
 input AddSubImageInput {

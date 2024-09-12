@@ -8,6 +8,7 @@ import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
 import net.grayfield.spb.hobbylog.domain.share.struct.Result;
+import net.grayfield.spb.hobbylog.schedule.image.ManageImages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class ImageService {
     private String storagePath;
 
     private final ImageRepository imageRepository;
+    private final ManageImages manageImages;
 
     private String classPath() throws FileNotFoundException {
         if(env.equals("default")) return ResourceUtils.getFile("classpath:static").toString();
@@ -211,5 +213,11 @@ public class ImageService {
         }
 
         return Result.builder().id("0").success(false).build();
+    }
+
+    public Result clearUseless() throws FileNotFoundException {
+        this.manageImages.deleteNonUsingImages();
+
+        return Result.builder().id("0").success(true).build();
     }
 }

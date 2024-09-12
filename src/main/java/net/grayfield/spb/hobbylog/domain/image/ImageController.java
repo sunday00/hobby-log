@@ -46,4 +46,10 @@ public class ImageController {
     public Result deleteImage(@Argument String path) {
         return this.imageService.deleteByPath(path);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @MutationMapping
+    public Result clearUseless () throws FileNotFoundException {
+        return this.imageService.clearUseless();
+    }
 }

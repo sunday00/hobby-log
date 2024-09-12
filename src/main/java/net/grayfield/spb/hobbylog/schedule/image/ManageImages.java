@@ -42,6 +42,7 @@ public class ManageImages {
         return new File(this.classPath()).getAbsolutePath();
     }
 
+    // TODO update time once per week
     @Scheduled(cron = "*/10 * * * * *")
     public void deleteNonUsingImages() throws FileNotFoundException {
         log.info("Deleting non-using images schedule start");

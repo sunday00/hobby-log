@@ -41,5 +41,9 @@ public class ImageController {
         return Result.builder().id(addSubImageInput.getId()).success(true).message(path).build();
     }
 
-
+    @PreAuthorize("hasRole('ROLE_WRITER')")
+    @MutationMapping
+    public Result deleteImage(@Argument String path) {
+        return this.imageService.deleteByPath(path);
+    }
 }

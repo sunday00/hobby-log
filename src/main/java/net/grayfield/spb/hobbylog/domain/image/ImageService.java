@@ -7,6 +7,7 @@ import net.grayfield.spb.hobbylog.domain.image.struct.ImageEntity;
 import net.grayfield.spb.hobbylog.domain.image.struct.ImageUsedAs;
 import net.grayfield.spb.hobbylog.domain.share.StaticHelper;
 import net.grayfield.spb.hobbylog.domain.share.struct.Category;
+import net.grayfield.spb.hobbylog.domain.share.struct.Result;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -202,4 +203,13 @@ public class ImageService {
         return this.imageRepository.findAllByUsedByAndUsedAs(mainId, ImageUsedAs.SUB);
     }
 
+    public Result deleteByPath(String path) {
+        Optional<ImageEntity> deleted = this.imageRepository.deleteByPath(path);
+
+        if(deleted.isPresent()) {
+            return Result.builder().id(deleted.get().getId()).success(true).build();
+        }
+
+        return Result.builder().id("0").success(false).build();
+    }
 }

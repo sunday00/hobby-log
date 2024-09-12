@@ -18,7 +18,8 @@ public class ImageBatchTemplateRepository {
 
     public boolean isExistsByCategoryAndPath (String path) {
         Query query = new Query(Criteria.where("path").is(path));
-        List<ImageEntity> images = mongoTemplate.find(query, ImageEntity.class, "imagesEntity");
+        List<ImageEntity> images = mongoTemplate.find(query, ImageEntity.class, "imageEntity");
+
         return !images.isEmpty();
     }
 }

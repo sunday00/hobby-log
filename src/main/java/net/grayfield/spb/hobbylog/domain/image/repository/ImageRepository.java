@@ -13,4 +13,6 @@ public interface ImageRepository extends MongoRepository<ImageEntity, String> {
     Optional<ImageEntity> findOneImageEntityByUsedByAndFlag(String usedBy, String flag);
 
     List<ImageEntity> findAllByUsedByAndUsedAs(String mainId, ImageUsedAs usedAs);
+
+    Optional<ImageEntity> deleteByPath(String path);
 }

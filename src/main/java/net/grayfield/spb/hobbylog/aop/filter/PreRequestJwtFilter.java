@@ -78,22 +78,32 @@ public class PreRequestJwtFilter extends OncePerRequestFilter {
             User user = new User();
             user.setRoles(List.of(Role.ROLE_GUEST));
 
-            UserAuthentication authentication = new UserAuthentication(user);
-            authentication.setAuthenticated(true);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            this.setUserSecurityContext(user);
 
             chain.doFilter(wrapper, res);
             return;
         }
 
-        String token = rawToken.replaceFirst("[b|B]earer ", "");
-        String userId = this.jwtService.getUserIdFromJwtToken(token);
-        User user = this.userService.createUserSessionById(userId);
+        try {
+            String token = rawToken.replaceFirst("[b|B]earer ", "");
+            String userId = this.jwtService.getUserIdFromJwtToken(token);
+            User user = this.userService.createUserSessionById(userId);
 
+            this.setUserSecurityContext(user);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+
+            User user = new User();
+            user.setRoles(List.of(Role.ROLE_GUEST));
+            this.setUserSecurityContext(user);
+        }
+
+        chain.doFilter(wrapper, res);
+    }
+
+    private void setUserSecurityContext(User user) {
         UserAuthentication authentication = new UserAuthentication(user);
         authentication.setAuthenticated(true);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        chain.doFilter(wrapper, res);
     }
 }

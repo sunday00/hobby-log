@@ -3,11 +3,16 @@ package net.grayfield.spb.hobbylog.aop.filter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import graphql.language.Document;
+import graphql.language.Field;
+import graphql.language.SelectionSet;
+import graphql.parser.Parser;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.grayfield.spb.hobbylog.aop.catcher.SignWithOtherException;
 import net.grayfield.spb.hobbylog.domain.auth.service.JwtService;
 import net.grayfield.spb.hobbylog.domain.user.service.UserService;
 import net.grayfield.spb.hobbylog.domain.user.struct.Role;
@@ -20,10 +25,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Order(1)
@@ -37,19 +42,28 @@ public class PreRequestJwtFilter extends OncePerRequestFilter {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> map = mapper.readValue(wrapper.getRequestBody(), new TypeReference<>() {});
 
-        boolean unNeedle = map.get("query").toString().contains("mutation");
+        List<String> ableToSkipQuery = List.of("sign", "testQuery");
 
-        List<String> query = Arrays.stream(map.get("query").toString()
-                .replaceAll("\\{", " ")
-                .replaceAll("\\}", " ")
-                .replaceAll("\\(", " ")
-                .replaceAll("\\)", " ")
-                .replaceAll("(?U)\\s+", " ")
-                .split(" ")).toList();
+        AtomicBoolean hasSignQuery = new AtomicBoolean(false);
+        AtomicBoolean hasOnlyAbleToSkipJwt = new AtomicBoolean(true);
+        AtomicInteger selectFields = new AtomicInteger();
 
-        Set<String> needle = Set.of("query", "sign", "code:", "accessToken");
+        Document doc = Parser.parse(map.get("query").toString());
+        doc.getDefinitions().forEach(definition -> {
+            List<SelectionSet> selectionSets = definition.getNamedChildren().getChildren("selectionSet");
+            selectionSets.forEach(selectionSet -> selectionSet.getSelections().forEach(selection -> {
+                Field field = (Field) selection;
+                if( field.getName().equals("sign")) hasSignQuery.set(true);
+                if( !ableToSkipQuery.contains(field.getName()) ) hasOnlyAbleToSkipJwt.set(false);
+                selectFields.getAndIncrement();
+            }));
+        });
 
-        return query.containsAll(needle) && !unNeedle;
+        if(hasSignQuery.get() && selectFields.get() > 1) {
+            throw new SignWithOtherException("Sign method should triggered Alone.");
+        }
+
+        return hasOnlyAbleToSkipJwt.get();
     }
 
     @Override
